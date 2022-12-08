@@ -186,7 +186,7 @@ export default function Subscription() {
                     <Spacing />
                     <Spacing />
                     <Spacing />
-                    <SubscriptionList searching={searching} pendingList={pendingList} reviewedList={approvedList} setInfo={setInfo} />
+                    <SubscriptionList searching={searching} pendingList={pendingList} reviewedList={approvedList} setInfo={setInfo} searchWord={""} />
 
 
                     {searching == false && lastID !== undefined &&
