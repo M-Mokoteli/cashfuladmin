@@ -8,7 +8,6 @@ import AppWrapper from './components/layout/AppWrapper';
 // axios.defaults.withCredentials = true
 
 function App() {
-
   return (
     <div>
 
