@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.si>button {
+    width: 100%;
+}
+.circleData{
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    justify-content: center;
+    font-family: 'Inter';
+    margin-top: 8px;
+    font-weight: 700;
+    line-height: 35px;
+}
+
+
+.circleData input{
+    text-align: center;
+    border: 0px;
+    border-radius: 0px;
+    font-family: 'Inter';
+    background: none;
+}
+.circleData.bottomInput{
+    border: 0px;
+    border-radius: 0px;
+    font-family: 'Inter';
+}
+
+.bottomInput input{
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 20px;
+}
+.circleDataTwo{
+    justify-content: center;
+    margin-top: 8px;
+    font-weight: 700;
+    font-family: 'Inter';
+}
+.fontSizes{
+    text-align: center;
+    font-size: 14px;
+}
+
+.closeBtn2{
+  text-align: right;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: 'Inter';
+}
+
+.circleDataMain{
+  text-align-last: left;
+  text-align: -webkit-center;
+  font-family: 'Inter';
+}
+
+.circleDataMain button{
+background: #36A2DA;
+border: 0.522727px solid rgba(0, 0, 0, 0.2);
+border-radius: 5.22727px;
+width: 71.61px;
+margin-top: 12px;
+font-family: 'Inter';
+font-style: normal;
+font-weight: 700;
+font-size: 9.40909px;
+line-height: 11px;
+color: #FFFFFF;
+/* margin-left: 55px; */
+}
+
+.circleDataMain button:hover{
+    background: #36A2DA;
+}
+
+.paraM{
+    font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 19px;
+text-align: center;
+margin-top: 6px;
+color: rgba(0, 0, 0, 0.8);
+}
+
+.headingData{
+  font-family: 'Inter';
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    padding-top: 6px;
+}
+
+p.paraMs{
+    text-align: justify;
+    font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 19px;
+}
+
+.tableData{
+  table-layout: fixed;
+  font-family: 'Inter';
+  width: 100%;
+}
+
+.tableData tr {
+    line-height: 35px;
+    font-family: 'Inter';
+    text-align: center;
+}
+.modeName .rm-text-gray-400 {
+    --tw-text-opacity: 1;
+    color: rgb(156 163 175/var(--tw-text-opacity));
+    display: none !important;
+}
+
+.modeName h3.rm-font-semibold{
+    margin: 0 auto;
+    background-color: #ffffff;
+}
+.modeName .rm-border-b {
+    border-bottom-width: 0px !important;
+}
+
+.modeName .rm-p-6.rm-space-y-6 {
+    /* padding: 0px; */
+    padding-top: 0;
+}
+
+.modeName button:nth-child(1){
+    justify-content: center;
+    display: flex;
+    width: 194px;
+    margin: 0 auto;
+    text-align: center;
+    background-color: rgb(54 162 218 / var(--tw-bg-opacity));
+  color: #ffffff;}
+  .modeName button:hover{
+    background-color: rgb(54 162 218 / var(--tw-bg-opacity));
+  color: #ffffff;}
+
+.containers {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    font-family: 'Inter';
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: absolute;
+    margin-left: 110px;
+    margin-top: -2px;
+  }
+  
+  /* Hide the browser's default radio button */
+  .containers input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  /* Create a custom radio button */
+  .checkmark {
+    position: absolute;
+    font-family: 'Inter';
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 40px;
+    background-color: #000000;
+    border-radius: 50%;
+  }
+  .containers.secondConst{
+    margin-top: 50px;
+  }
+  
+  /* On mouse-over, add a grey background color */
+  .containers:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+  
+  /* When the radio button is checked, add a blue background */
+  .containers input:checked ~ .checkmark {
+    background-color: #000000;
+  }
+  
+  /* Create the indicator (the dot/circle - hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  /* Show the indicator (dot/circle) when checked */
+  .containers input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+  /* Style the indicator (dot/circle) */
+  .containers .checkmark:after {
+    top: 7px;
+    left: 8px;
+    width: 25px;
+    height: 25px;
+      border-radius: 50%;
+      background: #ffffff;
+  }
+  .submitButtin button{
+    display: flex;
+    margin: 0 auto;
+    font-family: 'Inter';
+    width: 261px;
+    justify-content: center;
+  }
+
+  .submitButtin .relative{
+    width: 152px;
+  }
+
+  .submitButtin .w-full {
+    margin: 0 auto;
+    justify-content: center;
+    display: flex;
+    /* margin-top: 4px; */
+    margin-bottom: 16px;
+  }
+
+  .submitButtin select{
+    background: #FFFFFF;
+    border-radius: 10px;
+  }
+
+  .Subsmain button{
+    /* background-color: rgb(54 162 218 / var(--tw-bg-opacity));
+    color: #ffffff; */
+  }
+  .Subsmain button:hover{
+    /* background-color: rgb(54 162 218 / var(--tw-bg-opacity));
+    color: #ffffff; */
+  }

@@ -1,0 +1,39 @@
+{
+  "name": "cashful",
+  "homepage": "https://cashful-admin.netlify.app",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "build": "tsc && vite build && cp ./_redirects ./dist/_redirects",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "-": "^0.0.1",
+    "@milon27/react-modal": "1.2.4",
+    "@milon27/react-sidebar": "4.5.1",
+    "axios": "0.26.1",
+    "date-fns": "2.28.0",
+    "firebase": "^9.8.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-hook-form": "7.30.0",
+    "react-icons": "4.3.1",
+    "react-router-dom": "6.3.0",
+    "react-scripts": "^5.0.1",
+    "react-toastify": "8.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.33",
+    "@types/react-dom": "17.0.10",
+    "@vitejs/plugin-react": "1.0.7",
+    "autoprefixer": "10.4.7",
+    "gh-pages": "^4.0.0",
+    "postcss": "8.4.13",
+    "tailwindcss": "3.0.24",
+    "typescript": "4.5.4",
+    "vite": "^2.9.15"
+  }
+}
