@@ -328,9 +328,9 @@ function onChangeInstallment(value: string) {
               <div className='col-span-1 p-4 border rounded-md circleDataMain'>
                 <p className='paraM'>Loan Details</p>
                 <p className='paraM'>Date: {item?.loanDate.split(' ')[0]}</p>
-                <p className='paraM'>Outstanding Amount: {item?.totalRepayable}</p>
+                <p className='paraM'>Outstanding Amount: R {item?.totalRepayable}</p>
                 <p className='paraM'>Status: {item?.paymentStatus}</p>
-                <p className='paraM'>Remaining Balance: {item?.balanceRemaining.length == 0 ? item?.totalRepayable:item?.balanceRemaining }</p>
+                <p className='paraM'>Remaining Balance: R {item?.balanceRemaining.length == 0 ? item?.totalRepayable:item?.balanceRemaining }</p>
                 {/* <div className='flex items-center justify-between gap-2 circleData'>
                   <input value={item?.totalRepayable} />
                 </div> */}
@@ -344,23 +344,20 @@ function onChangeInstallment(value: string) {
                 </div>
                 <br></br>
                 <h5 className='fontSizes paraMs' >Next Instalment Date</h5>
-                <h5 className='fontSizes paraMs'>{nextInstallmentDate}</h5>
+                <h5 className='fontSizes paraMs'>R {nextInstallmentDate}</h5>
               </div>
-              <div className='col-span-1 p-4 border rounded-md'>
+              {authCodes && <div className='col-span-1 p-4 border rounded-md'>
                 <p className='paraM'>
-                  Status: {item?.loanStatus}
+                  Status: true
                   <br></br>
                   Message: Bin resolved<br></br>
-                  Bin: 539983<br></br>
-                  Brand: Mastercard<br></br>
-                  Sub Brand: <br></br>
-                  Country Code: NG<br></br>
-                  Country Name: Nigeria<br></br>
-                  Card Type: DEBIT<br></br>
-                  Bank: Guaranty Trust Bank<br></br>
-                  Linked Bank id: 9
+                  Bin: {authCodes.authorization.bin}<br></br>
+                  Brand: {authCodes.authorization.brand}<br></br>
+                  last4: {authCodes.authorization.last4}<br></br>
+                  Card Type: {authCodes.authorization.card_type}<br></br>
+                  Bank: {authCodes.authorization.bank}<br></br>
                 </p>
-              </div>
+              </div>}
             </div>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-1 fullwidt'>
               <div className='col-span-1 border rounded-md'>
@@ -377,7 +374,7 @@ function onChangeInstallment(value: string) {
                         return {
                           repayment: rep?.repayment.toString(),
                           dueDate: rep?.dueDate.toDate().toDateString(),
-                          amount: parseFloat(rep?.amount.toString()).toFixed(2).toString(),
+                          amount: "R " + parseFloat(rep?.amount.toString()).toFixed(2).toString(),
                           status: rep?.status.toString(),
                           // paidDate: {rep?.paidDate},
                         };
@@ -386,7 +383,7 @@ function onChangeInstallment(value: string) {
                         return {
                           repayment: rep?.repayment.toString(),
                           dueDate: rep?.dueDate.toDate().toDateString(),
-                          amount: parseFloat(rep?.amount.toString()).toFixed(2).toString(),
+                          amount: "R " + parseFloat(rep?.amount.toString()).toFixed(2).toString(),
                           status: rep?.status.toString(),
                           paidDate: rep?.paidDate.toString().split("T")[0],
                         };
@@ -412,7 +409,7 @@ function onChangeInstallment(value: string) {
                     <tr>
                       <td>{item.repayment}</td>
                       <td>{nextInstallmentDate}</td>
-                      <td>{item.totalRepayable}</td>
+                      <td>R {item.totalRepayable}</td>
                       <td>{item.paymentStatus}</td>
                       <td>{item.paidDate && item.paidDate.toString().split("T")[0]}</td>
                     </tr>
