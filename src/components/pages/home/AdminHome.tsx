@@ -10,7 +10,7 @@ import RequestSection from "./RequestSection";
 import UpcomingOrHistory from "./UpcomingOrHistory";
 import { Modal, Button } from "@milon27/react-modal";
 import UpcomingOrHistorySection from "./UpcomingOrHistory";
-import { searchUser, searchData, URHpopulateData } from "./HomeUtils";
+import { searchUser, searchData, URHpopulateData, onLoadAuthorizationCodes } from "./HomeUtils";
 // Page
 const AdminHome = () => {
   const { setLevels, levels } = useContext(StateContext);
@@ -19,6 +19,7 @@ const AdminHome = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [item, setItem] = useState(null as any);
   const [requests, setRequests] = useState<LoanRequest[]>([]);
+  const [authCodes, setAuthCodes] = useState(null as any);
 
   useEffect(() => {
     const load = async () => {
@@ -67,6 +68,10 @@ const AdminHome = () => {
   };
   const viewDetailsClicked = (item: any) => {
     setItem(item);
+    onLoadAuthorizationCodes(item.userId).then((value)=>{
+      setAuthCodes(value)
+    })
+    
     setShowDetails(true);
   };
   return (
@@ -119,7 +124,8 @@ const AdminHome = () => {
           </>
         }
       >
-        <>
+        <div id="wrapper">
+        <div className="block">
           <div>
             <strong>First Name: </strong> {item?.firstName}
           </div>
@@ -132,7 +138,34 @@ const AdminHome = () => {
           <div>
             <strong>Type: </strong> {item?.loanType}
           </div>
-        </>
+          
+        </div>
+
+        {authCodes && 
+        <div className="block">
+          <div>
+            <strong>Bank: </strong> {authCodes.authorization.bank}
+          </div>
+          <div>
+            <strong>Bin: </strong> {authCodes.authorization.bin}
+          </div>
+          <div>
+            <strong>Card Type: </strong> {authCodes.authorization.card_type}
+          </div>
+          <div>
+            <strong>Brand: </strong> {authCodes.authorization.brand}
+          </div>
+          <div>
+            <strong>Expiry: </strong> {authCodes.authorization.exp_year}
+          </div>
+          <div>
+            <strong>last4: </strong> {authCodes.authorization.last4}
+          </div>
+        </div>
+        }
+
+        </div>
+        
       </Modal>
     </Main>
   );

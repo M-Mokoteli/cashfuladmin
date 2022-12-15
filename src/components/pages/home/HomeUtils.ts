@@ -191,9 +191,6 @@ export const onUpdateLevel = async (uid: string, levelId: string) => {
 
 export const onLoadAuthorizationCodes = async (
     userId: string,
-    docId: string,
-    setPage: React.Dispatch<React.SetStateAction<number>>,
-    ...queryConstraints: QueryConstraint[]
 ) => {
     // console.log(queryConstraints);
     const lrColRef = createDoc<any>(Collections.AUTHORIZATION_CODES, userId)

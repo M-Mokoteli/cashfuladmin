@@ -73,7 +73,7 @@ export default function SubscriptionList({
       setRepayments(res)
       
     })
-    const authCodes=onLoadAuthorizationCodes(item.userId, item.id, setPage,where('Document ID', '==', item.userId))
+    const authCodes=onLoadAuthorizationCodes(item.userId)
     authCodes.then((res)=>{
       setAuthCodes(res)
     })
@@ -173,7 +173,7 @@ export default function SubscriptionList({
               article,
               //sk_test_f2eb250bf2baba6606992b64ed0fb0a61fe48655
               //sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30
-              { headers: { Authorization: `Bearer sk_test_f2eb250bf2baba6606992b64ed0fb0a61fe48655` } }
+              { headers: { Authorization: `Bearer sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30` } }
             )
             .then(async (response) => {
               console.log('=======Charge Card Response======', response.data.data.status);
