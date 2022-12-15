@@ -1,4 +1,4 @@
-import { query, where, orderBy, limit, getDocs, QuerySnapshot, WhereFilterOp, startAfter, endBefore, limitToLast, QueryConstraint, updateDoc, getDoc, doc, addDoc } from "firebase/firestore"
+import { query, where, orderBy, limit, getDocs, QuerySnapshot, WhereFilterOp, startAfter, endBefore, limitToLast, QueryConstraint, updateDoc, getDoc, doc, addDoc, deleteDoc } from "firebase/firestore"
 import React from "react"
 import { toast } from "react-toastify"
 import Define from "../../../utils/Define"
@@ -18,6 +18,36 @@ export const initLoadData = async (
     if (!data.empty) {
         setPage(1)
         populateData(data)
+    } else {
+        toast("No More Data Available!")
+    }
+}
+
+export const initUpdateCardList = async (
+    setPage: React.Dispatch<React.SetStateAction<number>>,
+) => {
+    const lrColRef = createCollection<any>(Collections.UPDATE_CARD)
+    const lrQuery = query<any>(lrColRef, orderBy("date", "desc"), limit(Define.PAGE_SIZE))
+    const data = await getDocs<any>(lrQuery)
+    // console.log("------", data);
+    if (!data.empty) {
+        setPage(1)
+        console.log("Update Card list")
+        // console.log(data.docs)
+
+        var arr = []
+        
+        for (let i = 0; i < data.docs.length; i++) {
+            var newInput = data.docs[i].data()
+            if(newInput.status === STATUS.pending){
+                arr.push(newInput)
+            }
+            
+            // console.log("Document Id: ", repayments.docs[i].id)
+        }
+
+        return arr
+        // return data.docs
     } else {
         toast("No More Data Available!")
     }
@@ -133,12 +163,28 @@ export const onUpdateStatus = async (item: LoanRequest, status: STATUS) => {
     }
 }
 
+export const onUpdateCardStatus = async (userId: string, status: STATUS) => {
+    //send to upcoming..
+    const yes = confirm("Are you sure you want to change the status to " + status + "?")
+    if (yes === true) {
+        const lrDocRef = createDoc<any>(Collections.UPDATE_CARD, userId)
+        if(status === STATUS.rejected){
+            await deleteDoc(lrDocRef)
+        }else{
+            await updateDoc(lrDocRef, { "status": status.toString() })
+        }
+        
+        window.location.reload()
+    }
+}
+
 export const onUpdateLevel = async (uid: string, levelId: string) => {
     //send to upcoming..
     const yes = confirm("Are you sure you want to change the lavel?")
     if (yes === true) {
         const lrDocRef = createDoc<User>(Collections.USER, uid)
         await updateDoc(lrDocRef, { "levelId": levelId })
+        
         window.location.reload()
     }
 }

@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import MyCard from '../../layout/common/MyCard';
 import Spacing from '../../layout/form/Spacing';
 import Table from '../../layout/form/Table';
+import Button from "../../layout/form/Button";
 import Title from '../../layout/form/Title';
 import { iUserInfo } from './Accounts';
-import { Modal, Button } from '@milon27/react-modal';
+import { Modal } from '@milon27/react-modal';
 import { LoanRequest, STATUS } from '../../../utils/interface/Models';
 import { StateContext } from '../../../utils/context/MainContext';
 import {
@@ -16,6 +17,8 @@ import {
   URHpopulateData,
   getRepayments,
   updateRepayments,
+  initUpdateCardList,
+  onUpdateCardStatus,
 } from '../home/HomeUtils';
 import { QuerySnapshot, Timestamp, where } from 'firebase/firestore';
 import Define from '../../../utils/Define';
@@ -59,6 +62,7 @@ export default function SubscriptionList({
   const [nextInstallmentDate, setNextInstallmentDate] = useState(null as any);
   const [nextInstallment, setInstallment] = useState(null as any);
   const [isPaidInstallments, setIsPaidInstallments] = useState(null as any);
+  const [updateCardList, setUpdateCardList] = useState(null as any);
 
   const onDetailsClick = (item: any) => {
     console.log(item);
@@ -82,10 +86,13 @@ export default function SubscriptionList({
       for(var i=0;i <repayments?.length;i++){
         if(repayments[i].status==="upcoming"){
           console.log("Setting next installment")
+          console.log(repayments[i]?.status.toString())
           setIsPaidInstallments(repayments[i]?.status.toString())
           setNextInstallmentDate(repayments[i]?.dueDate.toDate().toDateString())
           setInstallment(parseFloat(repayments[i]?.amount.toString()).toFixed(0))
           break
+        }else{
+          setIsPaidInstallments("paid")
         }
       }
       if(repayments.length===0){
@@ -137,6 +144,10 @@ export default function SubscriptionList({
 
   const populateData = async (data: QuerySnapshot<LoanRequest>) => {
     setRepayments(null)
+    initUpdateCardList(setPage).then((value)=>{
+      setUpdateCardList(value)
+      console.log(value)
+    });
     URHpopulateData(data, levels, setRequests);
   };
 
@@ -160,23 +171,29 @@ export default function SubscriptionList({
             .post(
               'https://api.paystack.co/transaction/charge_authorization',
               article,
-              { headers: { Authorization: `Bearer sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30` } }
+              //sk_test_f2eb250bf2baba6606992b64ed0fb0a61fe48655
+              //sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30
+              { headers: { Authorization: `Bearer sk_test_f2eb250bf2baba6606992b64ed0fb0a61fe48655` } }
             )
             .then(async (response) => {
               console.log('=======Charge Card Response======', response.data.data.status);
-              if(repayments){
-                if(repayments.length>0){
-                  for(var i=0; i<repayments.length;i++){
-                    if(repayments[i].status==="upcoming"){
-                      await updateRepayments(docId, repayments[i].repaymentId, true, response.data.data.reference.toString())
-                      break
+              console.log(response.data)
+              if(response.data.data.status==="success"){
+                if(repayments){
+                  if(repayments.length>0){
+                    for(var i=0; i<repayments.length;i++){
+                      if(repayments[i].status==="upcoming"){
+                        await updateRepayments(docId, repayments[i].repaymentId, true, response.data.data.reference.toString())
+                        break
+                      }
                     }
+                  }else{
+                    await updateRepayments(docId, '', false, response.data.data.reference.toString())
                   }
-                }else{
-                  await updateRepayments(docId, '', false, response.data.data.reference.toString())
                 }
+              }else{
+                toast("Some error occurred")
               }
-              
             });
         }
       }
@@ -220,8 +237,8 @@ function onChangeInstallment(value: string) {
                     onClick={() => {
                       onDetailsClick(item);
                     }}
-                    title='Get Auth'
-                  />
+                    
+                  >Get Auth</Button>
                 ),
               };
             }),
@@ -238,6 +255,55 @@ function onChangeInstallment(value: string) {
           prev={prev}
         />
       </div>
+      <div className='Subsmain'>
+        <Title text='Update Card Requests' isSubtitle />
+        <Spacing />
+        {updateCardList && <Table
+        header="Date,First Name,Last Name,Status,Options"
+        items={[
+          ...updateCardList.map((item:{firstName: string, date: string, lastName: string, status: string, userId: string }, i: any) => {
+            return {
+              date: item.date.split("T")[0],
+              fname: item.firstName,
+              lname: item.lastName,
+              status: item.status,
+              option: (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      // onUpdateStatus(item, STATUS.approved);
+                      onUpdateCardStatus(item.userId, STATUS.approved)
+                    }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    seconday
+                    onClick={() => {
+                      
+                      onUpdateCardStatus(item.userId, STATUS.rejected)
+                      // onUpdateStatus(item, STATUS.rejected);
+                    }}
+                  >
+                    Reject
+                  </Button>
+                </div>
+              ),
+            };
+          }),
+        ]}
+        hideOption={true}
+      />}
+        <Spacing />
+        {/* paginate here */}
+        {/* <FbPaginate
+          page={page}
+          setPage={setPage}
+          current_length={requests.length}
+          next={next}
+          prev={prev}
+        /> */}
+      </div>
       <Spacing />
       <Spacing />
       <div className='modeName'>
@@ -250,12 +316,12 @@ function onChangeInstallment(value: string) {
           setShow={setShowDetails}
           footer={
             <>
-              <Button onClick={() => apiCall(item.id)} title='Charge card' />
+              <Button onClick={() => apiCall(item.id)}>Charge card</Button>
             </>
           }
         >
           <>
-            <div className='closebtn closeBtn2' onClick={() => setShowDetails(false)}>
+            <div className='closeBtn2' onClick={() => setShowDetails(false)}>
               x
             </div>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
@@ -273,15 +339,16 @@ function onChangeInstallment(value: string) {
               <div className='col-span-1 p-4 border rounded-md'>
               
                 <h6 className='fontSizes'>Next Instalment</h6>
-                <div className='flex items-center justify-between gap-2 circleDataTwo'>
+                <div className='fontSizes paraMs'>
                   {nextInstallment}
                 </div>
-                <p className='paraM'>Next Instalment Date</p>
-                <h5 className='headingData'>{nextInstallmentDate}</h5>
+                <br></br>
+                <h5 className='fontSizes paraMs' >Next Instalment Date</h5>
+                <h5 className='fontSizes paraMs'>{nextInstallmentDate}</h5>
               </div>
               <div className='col-span-1 p-4 border rounded-md'>
-                <p className='paraM paraMs'>
-                  status: {item?.loanStatus}
+                <p className='paraM'>
+                  Status: {item?.loanStatus}
                   <br></br>
                   Message: Bin resolved<br></br>
                   Bin: 539983<br></br>
@@ -297,7 +364,8 @@ function onChangeInstallment(value: string) {
             </div>
             <div className='grid grid-cols-1 gap-4 md:grid-cols-1 fullwidt'>
               <div className='col-span-1 border rounded-md'>
-                <h5 className='headingData'>Repayment Schedule</h5>
+                <h5 className='fontSizes paraMs'>Repayment Schedule</h5>
+                <br></br>
                 
                 {(repayments!==null && repayments.length>0) && <Table
                   noShadow={true}
@@ -305,7 +373,7 @@ function onChangeInstallment(value: string) {
                   items={[
                     ...repayments.map((rep: { repayment: string, dueDate: any, amount: string, status: string, paidDate: any}, i: any) => {
                       // console.log(repayments);
-                      if(rep?.status==="upcoming"){
+                      if(rep?.status!=="paid"){
                         return {
                           repayment: rep?.repayment.toString(),
                           dueDate: rep?.dueDate.toDate().toDateString(),
@@ -314,6 +382,7 @@ function onChangeInstallment(value: string) {
                           // paidDate: {rep?.paidDate},
                         };
                       } else{
+                        console.log("Paid Date",rep?.paidDate)
                         return {
                           repayment: rep?.repayment.toString(),
                           dueDate: rep?.dueDate.toDate().toDateString(),

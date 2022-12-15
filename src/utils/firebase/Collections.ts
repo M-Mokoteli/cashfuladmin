@@ -7,4 +7,5 @@ export enum Collections {
     BACK_INFO = "background_informations",
     AUTHORIZATION_CODES = "authorization_codes",
     REPAYMENTS = "repayments",
+    UPDATE_CARD = "update_card",
 }

@@ -10,7 +10,7 @@
     border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     justify-content: center;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
     margin-top: 8px;
     font-weight: 700;
     line-height: 35px;
@@ -21,19 +21,19 @@
     text-align: center;
     border: 0px;
     border-radius: 0px;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
     background: none;
 }
 .circleData.bottomInput{
     border: 0px;
     border-radius: 0px;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
 }
 
 .bottomInput input{
     border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
 font-style: normal;
 font-weight: 700;
 font-size: 20px;
@@ -42,7 +42,7 @@ font-size: 20px;
     justify-content: center;
     margin-top: 8px;
     font-weight: 700;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
 }
 .fontSizes{
     text-align: center;
@@ -53,13 +53,13 @@ font-size: 20px;
   text-align: right;
   font-size: 20px;
   cursor: pointer;
-  font-family: 'Inter';
+  font-family: 'sans-serif';
 }
 
 .circleDataMain{
   text-align-last: left;
   text-align: -webkit-center;
-  font-family: 'Inter';
+  font-family: 'sans-serif';
 }
 
 .circleDataMain button{
@@ -68,7 +68,7 @@ border: 0.522727px solid rgba(0, 0, 0, 0.2);
 border-radius: 5.22727px;
 width: 71.61px;
 margin-top: 12px;
-font-family: 'Inter';
+font-family: 'sans-serif';
 font-style: normal;
 font-weight: 700;
 font-size: 9.40909px;
@@ -82,18 +82,21 @@ color: #FFFFFF;
 }
 
 .paraM{
-    font-family: 'Inter';
-font-style: normal;
-font-weight: 600;
-font-size: 16px;
-line-height: 19px;
-text-align: center;
-margin-top: 6px;
-color: rgba(0, 0, 0, 0.8);
+  font-family: sans-serif;
+  text-align: justify;
+  /* font-family: 'sans-serif'; */
+  /* font-style: normal; */
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  
+  /* text-align: center; */
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .headingData{
-  font-family: 'Inter';
+  font-family: 'sans-serif';
     font-weight: 700;
     font-size: 14px;
     text-align: center;
@@ -101,23 +104,24 @@ color: rgba(0, 0, 0, 0.8);
 }
 
 p.paraMs{
-    text-align: justify;
-    font-family: 'Inter';
-font-style: normal;
-font-weight: 600;
-font-size: 16px;
-line-height: 19px;
+    /* text-align: justify; */
+    text-align: center;
+    font-family: 'sans-serif';
+/* font-style: normal; */
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
 }
 
 .tableData{
   table-layout: fixed;
-  font-family: 'Inter';
+  font-family: 'sans-serif';
   width: 100%;
 }
 
 .tableData tr {
     line-height: 35px;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
     text-align: center;
 }
 .modeName .rm-text-gray-400 {
@@ -155,7 +159,7 @@ line-height: 19px;
     display: block;
     position: relative;
     padding-left: 35px;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
     margin-bottom: 12px;
     cursor: pointer;
     font-size: 22px;
@@ -178,7 +182,7 @@ line-height: 19px;
   /* Create a custom radio button */
   .checkmark {
     position: absolute;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
     top: 0;
     left: 0;
     height: 40px;
@@ -224,7 +228,7 @@ line-height: 19px;
   .submitButtin button{
     display: flex;
     margin: 0 auto;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
     width: 261px;
     justify-content: center;
   }
