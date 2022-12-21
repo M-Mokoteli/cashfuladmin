@@ -65,7 +65,7 @@ export default function RequestSection({ onDetailsClick }: iRS) {
       <Title text="Requests" isSubtitle />
       <Spacing />
       <Table
-        header="Date,First Name,Last Name,Level,Term,Amount,Interest,Details,Total,Options"
+        header="Date,First Name,Last Name,Level,Term,Amount,Interest,Instant Payout,Details,Total,Options"
         items={[
           ...requests.map((item, i) => {
             return {
@@ -95,6 +95,7 @@ export default function RequestSection({ onDetailsClick }: iRS) {
               term: item.paymentTime + "days",
               amount: Define.CURRENCY + item.loanAmount,
               interest: item.interest,
+              instantPayout: item.instantPayout == true ? 'Yes' : 'No',
               details: (
                 <Button
                   onClick={() => {

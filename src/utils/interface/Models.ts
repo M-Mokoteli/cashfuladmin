@@ -15,7 +15,7 @@ export class LoanRequest {
   paymentTime: string; // term in day(7 days)
   loanAmount: string; //loanAmount
   totalRepayable: string; //total
-
+  instantPayout: boolean;
   loanStatus: string;
   loanDetail: any;
   loanType: any;
@@ -32,7 +32,7 @@ export class LoanRequest {
     this.loanAmount = obj.loanAmount!;
     this.interest = obj.interest!;
     this.totalRepayable = obj.totalRepayable!;
-
+    this.instantPayout = obj.instantPayout!;
     this.loanStatus = obj.loanStatus!;
   }
 }
