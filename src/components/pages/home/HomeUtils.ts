@@ -172,8 +172,9 @@ export const onUpdateCardStatus = async (userId: string, status: STATUS) => {
             await deleteDoc(lrDocRef)
         }else{
             await updateDoc(lrDocRef, { "status": status.toString() })
+            const dataRef = await createDoc(Collections.AUTHORIZATION_CODES, userId);
+            await deleteDoc(dataRef);
         }
-        
         window.location.reload()
     }
 }
@@ -233,24 +234,35 @@ export const getRepayments = async (
     }
 }
 
-export const updateRepayments = async (
-    docId: string,
-    repaymentId: string,
-    isInstallment: boolean,
-    reference: string,
-) => {
 
+export const updateBalanceRemaining = async (docId: string, paidAmount: string) => {
+    const lrDocRef = createDoc<any>(Collections.LOAN_REQUEST, docId);
+    const loanRequestRef = await getDoc(lrDocRef);
+    const loanRequest = loanRequestRef.data();
+    const balanceRemaining = parseInt(loanRequest.totalRepayable) - parseInt(paidAmount);
+    await updateDoc(lrDocRef, { "balanceRemaining": balanceRemaining.toString() });
+}
+
+export const updateRepayments = async (reqObj: any) => {
+    const {isInstallment, docId, repaymentId, isfinal, reference, message, status, paymentAmount} = reqObj;
     var date = new Date()
-    
     if(isInstallment){
-
         const lrDocRef = updateChildDoc<any>(Collections.LOAN_REQUEST+"/"+docId+"/repayments", repaymentId)
-        await updateDoc(lrDocRef, { "status": "paid", "paidDate" : date.toISOString(), "reference": reference })
+        await updateDoc(lrDocRef, { "status": status, "paidDate" : date.toISOString(), "reference": reference, message: message });
+        if(isfinal){
+            const lrDocRef = createDoc<any>(Collections.LOAN_REQUEST, docId)
+            await updateDoc(lrDocRef, { "loanStatus": status,  "paymentStatus": status });
+        }
     }else{
         const lrDocRef = createDoc<any>(Collections.LOAN_REQUEST, docId)
-        await updateDoc(lrDocRef, { "paymentStatus": "paid", "paidDate" : date.toISOString(), "reference": reference })
+        if(status == "paid"){
+            await updateDoc(lrDocRef, { "loanStatus": status,"paymentStatus": status, "paidDate" : date.toISOString(), "reference": reference, message: message });
+        }else{
+            await updateDoc(lrDocRef, { "paymentStatus": status, "paidDate" : date.toISOString(), "reference": reference, message: message });
+        }
     }
-
-
+    if(status == "paid"){
+        await updateBalanceRemaining(docId, paymentAmount);
+    }
     window.location.reload()
 }

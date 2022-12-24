@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
-import MyCard from '../../layout/common/MyCard';
-import Spacing from '../../layout/form/Spacing';
-import Table from '../../layout/form/Table';
+import React, { useContext, useEffect, useState } from "react";
+import MyCard from "../../layout/common/MyCard";
+import Spacing from "../../layout/form/Spacing";
+import Table from "../../layout/form/Table";
 import Button from "../../layout/form/Button";
-import Title from '../../layout/form/Title';
-import { iUserInfo } from './Accounts';
-import { Modal } from '@milon27/react-modal';
-import { LoanRequest, STATUS } from '../../../utils/interface/Models';
-import { StateContext } from '../../../utils/context/MainContext';
+import Title from "../../layout/form/Title";
+import { iUserInfo } from "./Accounts";
+import { Modal } from "@milon27/react-modal";
+import { LoanRequest, STATUS } from "../../../utils/interface/Models";
+import { StateContext } from "../../../utils/context/MainContext";
 import {
   initLoadData,
   onLoadAuthorizationCodes,
@@ -19,13 +19,13 @@ import {
   updateRepayments,
   initUpdateCardList,
   onUpdateCardStatus,
-} from '../home/HomeUtils';
-import { QuerySnapshot, Timestamp, where } from 'firebase/firestore';
-import Define from '../../../utils/Define';
-import MySelect from '../../layout/form/MySelect';
-import FbPaginate from '../../layout/common/FbPaginate';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+} from "../home/HomeUtils";
+import { QuerySnapshot, Timestamp, where } from "firebase/firestore";
+import Define from "../../../utils/Define";
+import MySelect from "../../layout/form/MySelect";
+import FbPaginate from "../../layout/common/FbPaginate";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface iAccountList {
   searching: boolean;
@@ -34,22 +34,13 @@ interface iAccountList {
   setInfo: React.Dispatch<React.SetStateAction<iUserInfo>>;
   searchWord: string;
 }
-// var data = [
-//     { "Load": "asdadada",
-//     "First": "Jill Dupre",
-//     "Last": "Jill Duprse",
-//     "Term": "rt",
-//     "Account":"yh",
-//     "Intrest":"xc",
-//     "Total":"2022",
-//     }];
 
 export default function SubscriptionList({
   searching = false,
   pendingList = [],
   setInfo,
   reviewedList = [],
-  searchWord = '',
+  searchWord = "",
 }: iAccountList) {
   const [requests, setRequests] = useState<LoanRequest[]>([]);
   const { levels } = useContext(StateContext);
@@ -68,43 +59,52 @@ export default function SubscriptionList({
     console.log(item);
     setItem(item);
     setShowDetails(true);
-    const repayments=getRepayments(item.id)
-    repayments.then((res)=>{
-      setRepayments(res)
-      
-    })
-    const authCodes=onLoadAuthorizationCodes(item.userId)
-    authCodes.then((res)=>{
-      setAuthCodes(res)
-    })
+    const repayments = getRepayments(item.id);
+    repayments.then((res) => {
+      setRepayments(res);
+    });
+    const authCodes = onLoadAuthorizationCodes(item.userId);
+    authCodes.then((res) => {
+      setAuthCodes(res);
+    });
   };
 
   useEffect(() => {
-    console.log("Repayments",repayments)
-    console.log("Auth codes",authCodes)
-    if(repayments){
-      for(var i=0;i <repayments?.length;i++){
-        if(repayments[i].status==="upcoming"){
-          console.log("Setting next installment")
-          console.log(repayments[i]?.status.toString())
-          setIsPaidInstallments(repayments[i]?.status.toString())
-          setNextInstallmentDate(repayments[i]?.dueDate.toDate().toDateString())
-          setInstallment(parseFloat(repayments[i]?.amount.toString()).toFixed(0))
-          break
-        }else{
-          setIsPaidInstallments("paid")
+    console.log("Repayments", repayments);
+    console.log("Auth codes", authCodes);
+    if (repayments) {
+      for (var i = 0; i < repayments?.length; i++) {
+        if (repayments[i].status === "upcoming") {
+          console.log("Setting next installment");
+          console.log(repayments[i]?.status.toString());
+          setIsPaidInstallments(repayments[i]?.status.toString());
+          setNextInstallmentDate(
+            repayments[i]?.dueDate.toDate().toDateString()
+          );
+          setInstallment(
+            parseFloat(repayments[i]?.amount.toString())
+          );
+          break;
+        } else {
+          setIsPaidInstallments("paid");
         }
       }
-      if(repayments.length===0){
-        
-        setIsPaidInstallments(item.paymentStatus.toString())
-        setNextInstallmentDate(addDays(new Date(item.loanDate), parseInt(item.paymentTime.toString())).toISOString().split('T')[0])
-        setInstallment(parseFloat(item.totalRepayable.toString()).toFixed(0))
+      if (repayments.length === 0) {
+        setIsPaidInstallments(item.loanStatus.toString());
+        setNextInstallmentDate(
+          addDays(
+            new Date(item.loanDate),
+            parseInt(item.paymentTime.toString())
+          )
+            .toISOString()
+            .split("T")[0]
+        );
+        setInstallment(parseFloat(item.totalRepayable.toString()));
       }
     }
   }, [authCodes, repayments]);
 
-  function addDays(date : any, number : any) {
+  function addDays(date: any, number: any) {
     const newDate = new Date(date);
     return new Date(newDate.setDate(newDate.getDate() + number));
   }
@@ -114,14 +114,13 @@ export default function SubscriptionList({
       initLoadData(
         setPage,
         populateData,
-        where('loanStatus', '==', STATUS.approved)
+        where("loanStatus", "==", STATUS.approved)
       );
   }, [levels.length]);
 
   useEffect(() => {
-    initLoadData(setPage, populateData, where('firstName', '==', searchWord));
+    initLoadData(setPage, populateData, where("firstName", "==", searchWord));
   }, [reviewedList]);
-
 
   //next
   const next = async () => {
@@ -129,7 +128,7 @@ export default function SubscriptionList({
       setPage,
       populateData,
       requests,
-      where('loanStatus', '==', STATUS.approved)
+      where("loanStatus", "==", STATUS.approved)
     );
   };
   //prev
@@ -138,97 +137,113 @@ export default function SubscriptionList({
       setPage,
       populateData,
       requests,
-      where('loanStatus', '==', STATUS.approved)
+      where("loanStatus", "==", STATUS.approved)
     );
   };
 
   const populateData = async (data: QuerySnapshot<LoanRequest>) => {
-    setRepayments(null)
-    initUpdateCardList(setPage).then((value)=>{
-      setUpdateCardList(value)
-      console.log(value)
+    setRepayments(null);
+    initUpdateCardList(setPage).then((value) => {
+      setUpdateCardList(value);
+      console.log(value);
     });
     URHpopulateData(data, levels, setRequests);
   };
 
-  const loadPayment = async (uid:string) => {
-  //  console.log( onLoadPaymentInfo(setPage));;
+  const getIsFinal =  (index: number, repayments: any) => {
+    let count = 0;
+    repayments.forEach((data: { status: any; }) => {
+      if(data.status && data.status == "paid" ){
+        count++;
+      }
+    })
+    return index == count && index == repayments.length;
   };
-  const apiCall = async (docId: string) => {
-    if(authCodes){
-      if(isPaidInstallments==="paid"){
-        toast("Already paid")
-      }else{
-        const yes = confirm("Are you sure you want to charge card?")
-        if(yes===true){
+
+  const apiCall = async (
+    docId: string,
+    repaymentId: string,
+    paymentAmount: string,
+    index: number
+  ) => {
+    if (authCodes) {
+      if (isPaidInstallments === "paid") {
+        toast("Already paid");
+      } else {
+        const yes = confirm("Are you sure you want to charge card?");
+        if (yes === true) {
           const article = {
             authorization_code: authCodes.authorization.authorization_code,
-            email:authCodes.customer.email,
-            amount: parseInt(nextInstallment) * 100,
-            currency: 'ZAR',
+            email: authCodes.customer.email,
+            amount: parseInt(paymentAmount) * 100,
+            currency: "ZAR",
           };
           axios
             .post(
-              'https://api.paystack.co/transaction/charge_authorization',
+              "https://api.paystack.co/transaction/charge_authorization",
               article,
               //sk_test_f2eb250bf2baba6606992b64ed0fb0a61fe48655
               //sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30
-              { headers: { Authorization: `Bearer sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30` } }
+              {
+                headers: {
+                  Authorization: `Bearer sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30`,
+                },
+              }
             )
             .then(async (response) => {
-              console.log('=======Charge Card Response======', response.data.data.status);
-              console.log(response.data)
-              if(response.data.data.status==="success"){
-                if(repayments){
-                  if(repayments.length>0){
-                    for(var i=0; i<repayments.length;i++){
-                      if(repayments[i].status==="upcoming"){
-                        await updateRepayments(docId, repayments[i].repaymentId, true, response.data.data.reference.toString())
-                        break
-                      }
-                    }
-                  }else{
-                    await updateRepayments(docId, '', false, response.data.data.reference.toString())
-                  }
-                }
-              }else{
-                toast("Some error occurred")
+              let resObj = {
+                docId,
+                repaymentId,
+                isInstallment: null as any,
+                reference: response.data.data.reference.toString(),
+                message:
+                  response.data.message +
+                  " | " +
+                  response.data.data.gateway_response,
+                status:
+                  response.data.data.status === "success" ? "paid" : "failed",
+                isfinal: false,
+                paymentAmount,
+              };
+              if (repaymentId != "") {
+                resObj.isInstallment = true;
+                resObj.isfinal = getIsFinal(index, repayments);
+                await updateRepayments(resObj);
+              } else {
+                resObj.isInstallment = false;
+                await updateRepayments(resObj);
               }
+              if (response.data.data.status !== "success") {
+                toast("Some error occurred : "+ response.data.data.gateway_response);
+              }
+            })
+            .catch((error) => {
+              toast("Error in paystack : " + JSON.stringify(error));
+              console.log(error);
             });
         }
       }
     }
   };
 
-  
-function onChangeInstallment(value: string) {
-  const re = /^[0-9\b]+$/;
-  if (value === '' || re.test(value)) {
-    if(parseInt(value) <= parseInt(item.totalRepayable.toString())){
-      setInstallment(value)
-    }
- }
-}
-  
   return (
-    
     <MyCard>
-      <div className='Subsmain'>
-        <Title text='Search Result' isSubtitle />
+      <div className="Subsmain">
+        <Title text="Search Result" isSubtitle />
         <Spacing />
         <Table
           noShadow={true}
-          header='Loan Date,First Name,Last Name,Term,Account,Intrest,Total Repayble, Action'
+          header="Loan Date,First Name,Last Name,Term,Account,Intrest,Total Repayble, Action"
           items={[
             ...requests.map((item, i) => {
               // console.log(item);
               return {
-                date: item?.loanDate.split(' ')[0],
+                date: item?.loanDate.split(" ")[0],
                 fname: item?.firstName,
                 lname: item?.lastName,
                 // level: item?.level,
 
-                term: item.paymentTime + 'days',
+                term: item.paymentTime + "days",
                 amount: Define.CURRENCY + item.loanAmount,
                 interest: item.interest,
                 total: Define.CURRENCY + item.totalRepayable,
@@ -237,8 +252,9 @@ function onChangeInstallment(value: string) {
                     onClick={() => {
                       onDetailsClick(item);
                     }}
-                    
-                  >Get Auth</Button>
+                  >
+                    Get Auth
+                  </Button>
                 ),
               };
             }),
@@ -255,45 +271,57 @@ function onChangeInstallment(value: string) {
           prev={prev}
         />
       </div>
-      <div className='Subsmain'>
-        <Title text='Update Card Requests' isSubtitle />
+      <div className="Subsmain">
+        <Title text="Update Card Requests" isSubtitle />
         <Spacing />
-        {updateCardList && <Table
-        header="Date,First Name,Last Name,Status,Options"
-        items={[
-          ...updateCardList.map((item:{firstName: string, date: string, lastName: string, status: string, userId: string }, i: any) => {
-            return {
-              date: item.date.split("T")[0],
-              fname: item.firstName,
-              lname: item.lastName,
-              status: item.status,
-              option: (
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => {
-                      // onUpdateStatus(item, STATUS.approved);
-                      onUpdateCardStatus(item.userId, STATUS.approved)
-                    }}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    seconday
-                    onClick={() => {
-                      
-                      onUpdateCardStatus(item.userId, STATUS.rejected)
-                      // onUpdateStatus(item, STATUS.rejected);
-                    }}
-                  >
-                    Reject
-                  </Button>
-                </div>
+        {updateCardList && (
+          <Table
+            header="Date,First Name,Last Name,Status,Options"
+            items={[
+              ...updateCardList.map(
+                (
+                  item: {
+                    firstName: string;
+                    date: string;
+                    lastName: string;
+                    status: string;
+                    userId: string;
+                  },
+                  i: any
+                ) => {
+                  return {
+                    date: item.date.split("T")[0],
+                    fname: item.firstName,
+                    lname: item.lastName,
+                    status: item.status,
+                    option: (
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => {
+                            // onUpdateStatus(item, STATUS.approved);
+                            onUpdateCardStatus(item.userId, STATUS.approved);
+                          }}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          seconday
+                          onClick={() => {
+                            onUpdateCardStatus(item.userId, STATUS.rejected);
+                            // onUpdateStatus(item, STATUS.rejected);
+                          }}
+                        >
+                          Reject
+                        </Button>
+                      </div>
+                    ),
+                  };
+                }
               ),
-            };
-          }),
-        ]}
-        hideOption={true}
-      />}
+            ]}
+            hideOption={true}
+          />
+        )}
         <Spacing />
         {/* paginate here */}
         {/* <FbPaginate
@@ -306,147 +334,180 @@ function onChangeInstallment(value: string) {
       </div>
       <Spacing />
       <Spacing />
-      <div className='modeName'>
+      <div className="modeName">
         <Modal
-          title={item?.firstName + ' ' + item?.lastName}
+          title=""
           onClose={() => {
             setShowContent(false);
           }}
           show={showDetails}
           setShow={setShowDetails}
-          footer={
-            <>
-              <Button onClick={() => apiCall(item.id)}>Charge card</Button>
-            </>
-          }
+          footer={<></>}
         >
           <>
-            <div className='closeBtn2' onClick={() => setShowDetails(false)}>
-              x
-            </div>
-            <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
-              <div className='col-span-1 p-4 border rounded-md circleDataMain'>
-                <p className='paraM'>Loan Details</p>
-                <p className='paraM'>Date: {item?.loanDate.split(' ')[0]}</p>
-                <p className='paraM'>Outstanding Amount: R {item?.totalRepayable}</p>
-                <p className='paraM'>Status: {item?.paymentStatus}</p>
-                <p className='paraM'>Remaining Balance: R {item?.balanceRemaining.length == 0 ? item?.totalRepayable:item?.balanceRemaining }</p>
-                {/* <div className='flex items-center justify-between gap-2 circleData'>
-                  <input value={item?.totalRepayable} />
-                </div> */}
-                {/* <Button onClick={() => setShowDetails(false)} title='Submit' /> */}
+            <div className="model-header">
+              <div className="modal-title">{item?.firstName + " " + item?.lastName}</div>
+              <div className="closeBtn2" onClick={() => setShowDetails(false)}>
+                X
               </div>
-              <div className='col-span-1 p-4 border rounded-md'>
-              
-                <h6 className='fontSizes'>Next Instalment</h6>
-                <div className='fontSizes paraMs'>
-                  {nextInstallment}
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="col-span-1 p-4 border rounded-md circleDataMain">
+                <div className="center-elements">
+                  <p className="title-text">Loan Date</p>
+                  <p className="title-output">{item?.loanDate.split(" ")[0]}</p>
+                  <div className="spacing"></div>
+                  <p className="title-text">Remaining Balance: </p>
+                  <p className="title-output">
+                    R{" "}
+                    {item?.balanceRemaining == ""
+                      ? item?.totalRepayable
+                      : item?.balanceRemaining}
+                  </p>
                 </div>
-                <br></br>
-                <h5 className='fontSizes paraMs' >Next Instalment Date</h5>
-                <h5 className='fontSizes paraMs'>R {nextInstallmentDate}</h5>
               </div>
-              {authCodes && <div className='col-span-1 p-4 border rounded-md'>
-                <p className='paraM'>
-                  Status: true
-                  <br></br>
-                  Message: Bin resolved<br></br>
-                  Bin: {authCodes.authorization.bin}<br></br>
-                  Brand: {authCodes.authorization.brand}<br></br>
-                  last4: {authCodes.authorization.last4}<br></br>
-                  Card Type: {authCodes.authorization.card_type}<br></br>
-                  Bank: {authCodes.authorization.bank}<br></br>
-                </p>
-              </div>}
+              <div className="col-span-1 p-4 border rounded-md circleDataMain">
+                <div>
+                  <p className="title-text">Next Instalment</p>
+                  <p className="title-output">R{nextInstallment}</p>
+                  <div className="spacing"></div>
+                  <p className="title-text">Next Instalment Date</p>
+                  <p className="title-output">{nextInstallmentDate}</p>
+                </div>
+              </div>
+              {authCodes && (
+                <div className="col-span-1 p-4 border rounded-md">
+                  <p className="paraM">
+                    Status: true
+                    <br></br>
+                    Message: Bin resolved<br></br>
+                    Bin: {authCodes.authorization.bin}
+                    <br></br>
+                    Brand: {authCodes.authorization.brand}
+                    <br></br>
+                    last4: {authCodes.authorization.last4}
+                    <br></br>
+                    Card Type: {authCodes.authorization.card_type}
+                    <br></br>
+                    Bank: {authCodes.authorization.bank}
+                    <br></br>
+                  </p>
+                </div>
+              )}
             </div>
-            <div className='grid grid-cols-1 gap-4 md:grid-cols-1 fullwidt'>
-              <div className='col-span-1 border rounded-md'>
-                <h5 className='fontSizes paraMs'>Repayment Schedule</h5>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-1 fullwidt">
+              <div
+                className="col-span-1  rounded-md"
+                style={{ paddingTop: "12px" }}
+              >
                 <br></br>
-                
-                {(repayments!==null && repayments.length>0) && <Table
-                  noShadow={true}
-                  header='Repayment,Due Date,Amount,Status,Paid Date'
-                  items={[
-                    ...repayments.map((rep: { repayment: string, dueDate: any, amount: string, status: string, paidDate: any}, i: any) => {
-                      // console.log(repayments);
-                      if(rep?.status!=="paid"){
-                        return {
-                          repayment: rep?.repayment.toString(),
-                          dueDate: rep?.dueDate.toDate().toDateString(),
-                          amount: "R " + parseFloat(rep?.amount.toString()).toFixed(2).toString(),
-                          status: rep?.status.toString(),
-                          // paidDate: {rep?.paidDate},
-                        };
-                      } else{
-                        console.log("Paid Date",rep?.paidDate)
-                        return {
-                          repayment: rep?.repayment.toString(),
-                          dueDate: rep?.dueDate.toDate().toDateString(),
-                          amount: "R " + parseFloat(rep?.amount.toString()).toFixed(2).toString(),
-                          status: rep?.status.toString(),
-                          paidDate: rep?.paidDate.toString().split("T")[0],
-                        };
-                      }
-                    }),
-                  ]}
-                  hideOption={true}
-                />}
+                {repayments !== null && repayments.length > 0 && (
+                  <Table
+                    noShadow={true}
+                    header="Repayment,Due Date,Amount,Status,Message,Paid Date,Action"
+                    items={[
+                      ...repayments.map(
+                        (
+                          rep: {
+                            repayment: string;
+                            dueDate: any;
+                            amount: string;
+                            status: string;
+                            paidDate: any;
+                            repaymentId: string;
+                            message: string;
+                          },
+                          i: any
+                        ) => {
+                          // console.log(repayments);
+                          if (rep?.status !== "paid") {
+                            return {
+                              repayment: rep?.repayment.toString(),
+                              dueDate: rep?.dueDate.toDate().toDateString(),
+                              amount:
+                                "R " +
+                                parseFloat(rep?.amount.toString())
+                                  .toFixed(2)
+                                  .toString(),
+                              status: rep?.status.toString(),
+                              message: rep.message,
+                              // paidDate: {rep?.paidDate},
+                              paidDate: "N/A",
+                              action: (
+                                <Button
+                                  onClick={() =>
+                                    apiCall(
+                                      item.id,
+                                      rep.repaymentId,
+                                      rep?.amount.toString(),
+                                      i + 1
+                                    )
+                                  }
+                                >
+                                  Charge card
+                                </Button>
+                              ),
+                            };
+                          } else {
+                            console.log("Paid Date", rep?.paidDate);
+                            return {
+                              repayment: rep?.repayment.toString(),
+                              dueDate: rep?.dueDate.toDate().toDateString(),
+                              amount:
+                                "R " +
+                                parseFloat(rep?.amount.toString())
+                                  .toFixed(2)
+                                  .toString(),
+                              status: rep?.status.toString(),
+                              message: rep.message,
+                              paidDate: rep?.paidDate.toString().split("T")[0],
+                              action: "",
+                            };
+                          }
+                        }
+                      ),
+                    ]}
+                    hideOption={true}
+                  />
+                )}
 
-                {(repayments!==null && repayments.length===0) && 
-
-                <table className='tableData'>
-                  <thead>
-                    <tr>
-                      <th>Repayment</th>
-                      <th>Due Date</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th>Paid Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{item.repayment}</td>
-                      <td>{nextInstallmentDate}</td>
-                      <td>R {item.totalRepayable}</td>
-                      <td>{item.paymentStatus}</td>
-                      <td>{item.paidDate && item.paidDate.toString().split("T")[0]}</td>
-                    </tr>
+                {repayments !== null && repayments.length === 0 && (
+                  <table className="tableData table-new">
+                    <thead>
+                      <tr>
+                        <th>Repayment</th>
+                        <th>Due Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Message</th>
+                        <th>Paid Date</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{item.repayment}</td>
+                        <td>{nextInstallmentDate}</td>
+                        <td>R {item.totalRepayable}</td>
+                        <td>{item.paymentStatus ?? (item.loanStatus == 'approved' ? 'upcoming' : item.loanStatus)}</td>
+                        <td>{item.message ?? 'N/A'}</td>
+                        <td>
+                          {item.paidDate &&
+                            item.paidDate.toString().split("T")[0]}
+                        </td>
+                        <td>
+                          <Button
+                            onClick={() =>
+                              apiCall(item.id, "", item.totalRepayable, 1)
+                            }
+                          >
+                            Charge card
+                          </Button>
+                        </td>
+                      </tr>
                     </tbody>
-                </table>
-                // <Table
-                //   noShadow={true}
-                //   header='Repayment,Due Date,Amount,Status,Paid Date'
-                //   items={[
-                //     ...repayments.map((rep: { repayment: string, dueDate: any, amount: string, status: string, paidDate: any}, i: any) => {
-                //       // console.log(repayments);
-                //       if(rep?.status==="upcoming"){
-                //         return {
-                //           repayment: rep?.repayment.toString(),
-                //           dueDate: rep?.dueDate.toDate().toDateString(),
-                //           amount: parseFloat(rep?.amount.toString()).toFixed(2).toString(),
-                //           status: rep?.status.toString(),
-                //           // paidDate: {rep?.paidDate},
-                //         };
-                //       } else{
-                //         return {
-                //           repayment: rep?.repayment.toString(),
-                //           dueDate: rep?.dueDate.toDate().toDateString(),
-                //           amount: parseFloat(rep?.amount.toString()).toFixed(2).toString(),
-                //           status: rep?.status.toString(),
-                //           paidDate: rep?.paidDate.toString(),
-                //         };
-                //       }
-                //     }),
-                //   ]}
-                //   hideOption={true}
-                // />
-                }
-              </div>
-
-              <div className='flex items-center justify-between gap-2 circleData bottomInput'>
-                <input value={nextInstallment} onChange={val => onChangeInstallment(val.target.value)} type="number" />
+                  </table>
+                )}
               </div>
             </div>
           </>
@@ -455,6 +516,3 @@ function onChangeInstallment(value: string) {
     </MyCard>
   );
 }
-
-
-
