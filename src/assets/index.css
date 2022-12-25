@@ -3,6 +3,30 @@
 @tailwind utilities;
 
 
+@font-face {
+  font-family: InterBold700;
+  src: url(./fonts/Inter-Bold.ttf);
+}
+
+@font-face {
+  font-family: InterSemiBold600;
+  src: url(./fonts/Inter-SemiBold.ttf);
+}
+
+@font-face {
+  font-family: InterMedium500;
+  src: url(./fonts/Inter-Medium.ttf);
+}
+
+@font-face {
+  font-family: InterRegular400;
+  src: url(./fonts/Inter-Regular.ttf);
+}
+
+*{
+  font-family: InterRegular400;
+}
+
 .si>button {
     width: 100%;
 }
@@ -10,7 +34,6 @@
     border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     justify-content: center;
-    font-family: 'sans-serif';
     margin-top: 8px;
     font-weight: 700;
     line-height: 35px;
@@ -21,19 +44,16 @@
     text-align: center;
     border: 0px;
     border-radius: 0px;
-    font-family: 'sans-serif';
     background: none;
 }
 .circleData.bottomInput{
     border: 0px;
     border-radius: 0px;
-    font-family: 'sans-serif';
 }
 
 .bottomInput input{
     border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    font-family: 'sans-serif';
 font-style: normal;
 font-weight: 700;
 font-size: 20px;
@@ -42,7 +62,6 @@ font-size: 20px;
     justify-content: center;
     margin-top: 8px;
     font-weight: 700;
-    font-family: 'sans-serif';
 }
 .fontSizes{
     text-align: center;
@@ -61,18 +80,43 @@ font-size: 20px;
   flex: 0 0 50px;
   margin: 5px;
 }
-
-.closeBtn2{
+.model-header{
+  display: flex;
+  font-size: 18px;
+}
+.modal-title{
+  width: 100%;
+  font-family: InterBold700;
   text-align: right;
-  font-size: 20px;
+  font-size: 24px;
+}
+.closeBtn2{
+  width: 80%;
+  text-align: right;
   cursor: pointer;
-  font-family: 'sans-serif';
+  font-family: InterMedium500;
+}
+.spacing{
+  height: 20px;
+}
+.title-text{
+  font-size: 16px;
+  font-family: InterRegular400;
+}
+
+.title-output{
+  font-size: 20px;
+  font-family: InterSemiBold600;
 }
 
 .circleDataMain{
-  text-align-last: left;
-  text-align: -webkit-center;
-  font-family: 'sans-serif';
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.center-elements{
+
 }
 
 .circleDataMain button{
@@ -81,7 +125,6 @@ border: 0.522727px solid rgba(0, 0, 0, 0.2);
 border-radius: 5.22727px;
 width: 71.61px;
 margin-top: 12px;
-font-family: 'sans-serif';
 font-style: normal;
 font-weight: 700;
 font-size: 9.40909px;
@@ -95,10 +138,7 @@ color: #FFFFFF;
 }
 
 .paraM{
-  font-family: sans-serif;
   text-align: justify;
-  /* font-family: 'sans-serif'; */
-  /* font-style: normal; */
   font-weight: 600;
   font-size: 16px;
   line-height: 20px;
@@ -109,7 +149,6 @@ color: #FFFFFF;
 }
 
 .headingData{
-  font-family: 'sans-serif';
     font-weight: 700;
     font-size: 14px;
     text-align: center;
@@ -119,7 +158,6 @@ color: #FFFFFF;
 p.paraMs{
     /* text-align: justify; */
     text-align: center;
-    font-family: 'sans-serif';
 /* font-style: normal; */
   font-weight: 600;
   font-size: 16px;
@@ -128,15 +166,21 @@ p.paraMs{
 
 .tableData{
   table-layout: fixed;
-  font-family: 'sans-serif';
   width: 100%;
 }
 
 .tableData tr {
     line-height: 35px;
-    font-family: 'sans-serif';
     text-align: center;
 }
+
+.tableData tr th {
+  font-family: InterMedium500;
+}
+.tableData tr th,.tableData tr td {
+  padding: 8px;
+}
+
 .modeName .rm-text-gray-400 {
     --tw-text-opacity: 1;
     color: rgb(156 163 175/var(--tw-text-opacity));
@@ -159,7 +203,7 @@ p.paraMs{
 .modeName button:nth-child(1){
     justify-content: center;
     display: flex;
-    width: 194px;
+    width: 100%;
     margin: 0 auto;
     text-align: center;
     background-color: rgb(54 162 218 / var(--tw-bg-opacity));
@@ -172,7 +216,6 @@ p.paraMs{
     display: block;
     position: relative;
     padding-left: 35px;
-    font-family: 'sans-serif';
     margin-bottom: 12px;
     cursor: pointer;
     font-size: 22px;
@@ -195,7 +238,6 @@ p.paraMs{
   /* Create a custom radio button */
   .checkmark {
     position: absolute;
-    font-family: 'sans-serif';
     top: 0;
     left: 0;
     height: 40px;
@@ -241,7 +283,6 @@ p.paraMs{
   .submitButtin button{
     display: flex;
     margin: 0 auto;
-    font-family: 'sans-serif';
     width: 261px;
     justify-content: center;
   }
@@ -271,3 +312,7 @@ p.paraMs{
     /* background-color: rgb(54 162 218 / var(--tw-bg-opacity));
     color: #ffffff; */
   }
+
+  .table-new, .table-new th, .table-new td{
+    border: 1px solid lightgrey;
+  } 

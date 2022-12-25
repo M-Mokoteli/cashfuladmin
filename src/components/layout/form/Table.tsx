@@ -33,7 +33,7 @@ export default function Table({ header, items, hideOption = false, noShadow = fa
                         <tr>
                             {
                                 header.split(",").map((item, indx) => {
-                                    return <th key={indx} scope="col" className="px-6 py-3">
+                                    return <th key={indx} scope="col" className="px-6 py-3" style={{textAlign:'center'}}>
                                         {item}
                                     </th>
                                 })
@@ -48,7 +48,7 @@ export default function Table({ header, items, hideOption = false, noShadow = fa
                     <tbody>
                         {
                             items.map((rowItem, idx) => {
-                                return <tr key={idx} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                return <tr key={idx} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" style={{textAlign:'center'}}>
                                     {/* <th scope="row" className="p-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                     Apple MacBook Pro 17"
                                 </th> */}
