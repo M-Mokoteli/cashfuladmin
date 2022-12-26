@@ -93,7 +93,7 @@ export default function AccountInfo({ info }: iAccountInfo) {
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={idCard ? idCard['url'] : info?.doc?.idCard?.url || ""} status={idCard ? idCard['status'] : info?.doc?.idCard?.status || ""} infoKey="idCard" />
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={proofOfAddress ? proofOfAddress['url'] : info?.doc?.proofOfAddress?.url || ""} status={proofOfAddress ? proofOfAddress['status'] : info?.doc?.proofOfAddress?.status} infoKey="proofOfAddress" />
-            <div className='submitButtin'>
+            {/* <div className='submitButtin'>
             <MySelect
                    label="Select Level"
                   labelAsFirst
@@ -111,7 +111,7 @@ export default function AccountInfo({ info }: iAccountInfo) {
                   }}
                 />
             <Button onClick={() => { onUpdateStatus("approved") }}>Submit</Button>
-                                </div>
+                                </div> */}
         </MyCard>
     )
 }

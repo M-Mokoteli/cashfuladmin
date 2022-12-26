@@ -69,12 +69,15 @@ font-size: 20px;
 }
 
 #wrapper {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  height: 220px;
   width: 516px;
 }
+#wrapper div {
+  margin-bottom: 12px;
+}
+#wrapper strong {
+  font-family: InterSemiBold600;
+}
+
 .block {
   width: 90px;
   flex: 0 0 50px;
