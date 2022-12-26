@@ -94,7 +94,7 @@ export default function RequestSection({ onDetailsClick }: iRS) {
               ),
               term: item.paymentTime + "days",
               amount: Define.CURRENCY + item.loanAmount,
-              interest: item.interest,
+              interest: parseFloat(item.interest) * 100 + "%",
               instantPayout: item.instantPayout == true ? 'Yes' : 'No',
               details: (
                 <Button

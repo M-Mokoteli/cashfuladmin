@@ -82,7 +82,7 @@ export default function SubscriptionList({
             repayments[i]?.dueDate.toDate().toDateString()
           );
           setInstallment(
-            parseFloat(repayments[i]?.amount.toString())
+            parseFloat(repayments[i]?.amount).toFixed(2)
           );
           break;
         } else {
@@ -99,7 +99,7 @@ export default function SubscriptionList({
             .toISOString()
             .split("T")[0]
         );
-        setInstallment(parseFloat(item.totalRepayable.toString()));
+        setInstallment(parseFloat(item.totalRepayable).toFixed(2));
       }
     }
   }, [authCodes, repayments]);
@@ -245,7 +245,7 @@ export default function SubscriptionList({
 
                 term: item.paymentTime + "days",
                 amount: Define.CURRENCY + item.loanAmount,
-                interest: item.interest,
+                interest: parseFloat(item.interest) * 100 + "%",  
                 total: Define.CURRENCY + item.totalRepayable,
                 Action: (
                   <Button
@@ -361,8 +361,8 @@ export default function SubscriptionList({
                   <p className="title-output">
                     R{" "}
                     {item?.balanceRemaining == ""
-                      ? item?.totalRepayable
-                      : item?.balanceRemaining}
+                      ? (parseFloat(item?.totalRepayable).toFixed(2)).toString()
+                      : (parseFloat(item?.balanceRemaining).toFixed(2)).toString()}
                   </p>
                 </div>
               </div>
@@ -472,23 +472,23 @@ export default function SubscriptionList({
                 )}
 
                 {repayments !== null && repayments.length === 0 && (
-                  <table className="tableData table-new">
-                    <thead>
-                      <tr>
-                        <th>Repayment</th>
-                        <th>Due Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Message</th>
-                        <th>Paid Date</th>
-                        <th>Action</th>
+                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 tableData ">
+                    <thead className="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-gray-700 dark:text-gray-400">
+                      <tr >
+                        <th className="px-6 py-3">Repayment</th>
+                        <th className="px-6 py-3">Due Date</th>
+                        <th className="px-6 py-3">Amount</th>
+                        <th className="px-6 py-3">Status</th>
+                        <th className="px-6 py-3">Message</th>
+                        <th className="px-6 py-3">Paid Date</th>
+                        <th className="px-6 py-3">Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
+                      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" style={{textAlign:'center'}}>
                         <td>{item.repayment}</td>
                         <td>{nextInstallmentDate}</td>
-                        <td>R {item.totalRepayable}</td>
+                        <td>R {parseFloat(item.totalRepayable).toFixed(2)}</td>
                         <td>{item.paymentStatus ?? (item.loanStatus == 'approved' ? 'upcoming' : item.loanStatus)}</td>
                         <td>{item.message ?? 'N/A'}</td>
                         <td>

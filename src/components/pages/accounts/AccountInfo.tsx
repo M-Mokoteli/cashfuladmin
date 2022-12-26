@@ -1,5 +1,5 @@
 import { id } from 'date-fns/locale'
-import { QuerySnapshot, updateDoc, where } from 'firebase/firestore'
+import { getDoc, QuerySnapshot, where } from 'firebase/firestore'
 import React, { useContext, useEffect, useState } from 'react'
 import { StateContext } from '../../../utils/context/MainContext'
 import { Collections } from '../../../utils/firebase/Collections'
@@ -26,10 +26,15 @@ interface iAccountInfo {
     setInfo: React.Dispatch<React.SetStateAction<iUserInfo>>
 }
 
-export default function AccountInfo({ info, setInfo }: iAccountInfo) {
+export default function AccountInfo({ info }: iAccountInfo) {
     const { levels } = useContext(StateContext);
     const [page, setPage] = useState(0);
     const [requests, setRequests] = useState<LoanRequest[]>([]);
+    const [bankStatement, setBankStatement] = useState(null);
+    const [idCard, setIdCard] = useState(null);
+    const [proofOfAddress, setProofOfAddress] = useState(null);
+
+
     useEffect(() => {
         if (levels.length > 0)
           initLoadData(
@@ -38,6 +43,7 @@ export default function AccountInfo({ info, setInfo }: iAccountInfo) {
             where("loanStatus", "==", STATUS.pending)
           );
       }, [levels.length]);
+
       const populateData = async (data: QuerySnapshot<LoanRequest>) => {
         URHpopulateData(data, levels, setRequests);
       };
@@ -58,6 +64,16 @@ export default function AccountInfo({ info, setInfo }: iAccountInfo) {
         }
     }
 
+    const getUpdatedDocs = async (docId:string, setIsLoader:Function) => {
+      const docColRef = createDoc<any>(Collections.USER_DOC, docId);
+      const docData = await getDoc(docColRef);
+      setBankStatement(docData.data().bankStatement);
+      setIdCard(docData.data().idCard);
+      setProofOfAddress(docData.data().proofOfAddress);
+      setIsLoader(false);
+    }
+
+    
     return (
         <MyCard>
             <Title text='Account Information' />
@@ -74,9 +90,9 @@ export default function AccountInfo({ info, setInfo }: iAccountInfo) {
             <Spacing />
             <Title text='User documents' />
             <Spacing />
-            <DocBox id={info?.id || ""} url={info?.doc?.bankStatement?.url || ""} status={info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
-            <DocBox id={info?.id || ""} url={info?.doc?.idCard?.url || ""} status={info?.doc?.idCard?.status || ""} infoKey="idCard" />
-            <DocBox id={info?.id || ""} url={info?.doc?.proofOfAddress?.url || ""} status={info?.doc?.proofOfAddress?.status} infoKey="proofOfAddress" />
+            <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
+            <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={idCard ? idCard['url'] : info?.doc?.idCard?.url || ""} status={idCard ? idCard['status'] : info?.doc?.idCard?.status || ""} infoKey="idCard" />
+            <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={proofOfAddress ? proofOfAddress['url'] : info?.doc?.proofOfAddress?.url || ""} status={proofOfAddress ? proofOfAddress['status'] : info?.doc?.proofOfAddress?.status} infoKey="proofOfAddress" />
             <div className='submitButtin'>
             <MySelect
                    label="Select Level"

@@ -161,7 +161,7 @@ export default function UpcomingOrHistorySection({
               ),
               term: item.paymentTime + "days",
               amount: Define.CURRENCY + item.loanAmount,
-              interest: item.interest,
+              interest: parseFloat(item.interest) * 100 + "%",
               details: (
                 <Button
                   onClick={() => {
