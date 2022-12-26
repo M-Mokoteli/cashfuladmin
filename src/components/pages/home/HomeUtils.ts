@@ -142,7 +142,7 @@ export const URHpopulateData = async (
             firstName: user.data()?.firstName,
             lastName: user.data()?.lastName,
             level: levelData?.id.trim() + "",
-            interest: levelData?.interest * 100 + "%"
+            // interest: levelData?.interest * 100 + "%"
         } as LoanRequest
         setRequests(old => {
             return [...old, obj]
@@ -240,7 +240,7 @@ export const updateBalanceRemaining = async (docId: string, paidAmount: string) 
     const loanRequestRef = await getDoc(lrDocRef);
     const loanRequest = loanRequestRef.data();
     const balanceRemaining = parseInt(loanRequest.totalRepayable) - parseInt(paidAmount);
-    await updateDoc(lrDocRef, { "balanceRemaining": balanceRemaining.toString() });
+    await updateDoc(lrDocRef, { "balanceRemaining": balanceRemaining.toFixed(2) });
 }
 
 export const updateRepayments = async (reqObj: any) => {

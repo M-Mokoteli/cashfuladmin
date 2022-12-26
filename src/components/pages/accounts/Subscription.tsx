@@ -1,11 +1,12 @@
 import { documentId, getDoc, getDocs, limit, orderBy, query, QuerySnapshot, startAfter, where } from 'firebase/firestore'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { StateContext } from "../../../utils/context/MainContext";
 import { toast } from 'react-toastify'
 import Define from '../../../utils/Define'
 import { Collections } from '../../../utils/firebase/Collections'
 import { createCollection, createDoc } from '../../../utils/firebase/config'
 import Helper from '../../../utils/Helper'
-import { STATUS, User, UserDoc } from '../../../utils/interface/Models'
+import { Level, STATUS, User, UserDoc } from '../../../utils/interface/Models'
 import Main from '../../layout/dashboard/Main'
 import Button from '../../layout/form/Button'
 import Spacing from '../../layout/form/Spacing'
@@ -128,8 +129,35 @@ export default function Subscription() {
             toast("No Data Available")
         }
     }
+    const { setLevels, levels } = useContext(StateContext);
 
-
+    useEffect(() => {
+        const load = async () => {
+          const levelColRef = createCollection<Level>(Collections.LEVEL);
+          const data = await getDocs(levelColRef);
+          const tst = data.docs.map((item) => {
+            return {
+              ...item.data(),
+              id: item.id,
+            };
+          });
+          tst.sort(function (a, b) {
+            const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+            const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+    
+            // names must be equal
+            return 0;
+          });
+          setLevels(tst);
+        };
+        load();
+      }, []);
 
     // show that on approve list
     const doSearch = async (event: { key: string }) => {

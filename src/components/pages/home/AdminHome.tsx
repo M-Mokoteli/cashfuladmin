@@ -120,12 +120,11 @@ const AdminHome = () => {
         setShow={setShowDetails}
         footer={
           <>
-            <Button onClick={() => setShowDetails(false)} title="Close" />
           </>
         }
       >
         <div id="wrapper">
-        <div className="block">
+        <div >
           <div>
             <strong>First Name: </strong> {item?.firstName}
           </div>
@@ -142,7 +141,7 @@ const AdminHome = () => {
         </div>
 
         {authCodes && 
-        <div className="block">
+        <div >
           <div>
             <strong>Bank: </strong> {authCodes.authorization.bank}
           </div>
