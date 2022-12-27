@@ -233,7 +233,7 @@ export default function SubscriptionList({
         <Spacing />
         <Table
           noShadow={true}
-          header="Loan Date,First Name,Last Name,Term,Account,Intrest,Total Repayble, Action"
+          header="Loan Date,First Name,Last Name,Term,Account,Interest,Total Repayable, Action"
           items={[
             ...requests.map((item, i) => {
               // console.log(item);
