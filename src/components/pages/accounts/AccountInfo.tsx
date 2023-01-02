@@ -23,10 +23,11 @@ interface iAccountInfo {
     url: string
     infoKey: string
     isPdf?: boolean
+    load: Function
     setInfo: React.Dispatch<React.SetStateAction<iUserInfo>>
 }
 
-export default function AccountInfo({ info }: iAccountInfo) {
+export default function AccountInfo({ info, load }: iAccountInfo) {
     const { levels } = useContext(StateContext);
     const [page, setPage] = useState(0);
     const [requests, setRequests] = useState<LoanRequest[]>([]);
@@ -43,6 +44,14 @@ export default function AccountInfo({ info }: iAccountInfo) {
             where("loanStatus", "==", STATUS.pending)
           );
       }, [levels.length]);
+
+      useEffect(() => {
+        if(bankStatement != null){
+          setBankStatement(null);
+          setIdCard(null);
+          setProofOfAddress(null);
+        }
+      },[info.id])
 
       const populateData = async (data: QuerySnapshot<LoanRequest>) => {
         URHpopulateData(data, levels, setRequests);
@@ -71,6 +80,7 @@ export default function AccountInfo({ info }: iAccountInfo) {
       setIdCard(docData.data().idCard);
       setProofOfAddress(docData.data().proofOfAddress);
       setIsLoader(false);
+      load();
     }
 
     
