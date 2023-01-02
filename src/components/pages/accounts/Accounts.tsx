@@ -37,35 +37,35 @@ export default function Accounts() {
     const [searching, setSearching] = useState(false)
     const [search, setSearch] = useState("")
 
-    useEffect(() => {
-        const load = async () => {
-            const docColRef = createCollection<UserDoc>(Collections.USER_DOC)
-            const q1 = query(docColRef, where("bankStatement.status", "==", "pending"))
-            const q2 = query(docColRef, where("idCard.status", "==", "pending"))
-            const q3 = query(docColRef, where("proofOfAddress.status", "==", "pending"))
+    const load = async () => {
+        const docColRef = createCollection<UserDoc>(Collections.USER_DOC)
+        const q1 = query(docColRef, where("bankStatement.status", "==", "pending"))
+        const q2 = query(docColRef, where("idCard.status", "==", "pending"))
+        const q3 = query(docColRef, where("proofOfAddress.status", "==", "pending"))
 
-            const q4 = query(docColRef,
-                where("bankStatement.status", "==", "approved"),
-                where("idCard.status", "==", "approved"),
-                where("proofOfAddress.status", "==", "approved"),
-                orderBy(documentId()),
-                limit(Define.PAGE_SIZE)
-            )
+        const q4 = query(docColRef,
+            where("bankStatement.status", "==", "approved"),
+            where("idCard.status", "==", "approved"),
+            where("proofOfAddress.status", "==", "approved"),
+            orderBy(documentId()),
+            limit(Define.PAGE_SIZE)
+        )
 
-            const [d1, d2, d3, d4] = await Promise.all([getDocs(q1), getDocs(q2), getDocs(q3), getDocs(q4)])
-            setPendingList(await getPendingUserList(d1, d2, d3));
-            const [mylast, approveList] = await getApprovedList(d4);
-            if (approveList) {
-                setApprovedList(approveList as iUserInfo[])
-            } else {
-                toast("No Next Page Available")
-            }
-            if (mylast !== undefined) {
-                setLastID(mylast as string)
-            } else {
-                setLastID(undefined)
-            }
+        const [d1, d2, d3, d4] = await Promise.all([getDocs(q1), getDocs(q2), getDocs(q3), getDocs(q4)])
+        setPendingList(await getPendingUserList(d1, d2, d3));
+        const [mylast, approveList] = await getApprovedList(d4);
+        if (approveList) {
+            setApprovedList(approveList as iUserInfo[])
+        } else {
+            toast("No Next Page Available")
         }
+        if (mylast !== undefined) {
+            setLastID(mylast as string)
+        } else {
+            setLastID(undefined)
+        }
+    }
+    useEffect(() => {
         load()
     }, [realod])
 
@@ -201,7 +201,7 @@ export default function Accounts() {
                     {/* {
                         JSON.stringify(info.id)
                     } */}
-                    <AccountInfo info={info} setInfo={setInfo} id={''} status={''} url={''} infoKey={''} />
+                    <AccountInfo load={load} info={info} setInfo={setInfo} id={''} status={''} url={''} infoKey={''} />
                 </div>
             </div>
         </Main>
