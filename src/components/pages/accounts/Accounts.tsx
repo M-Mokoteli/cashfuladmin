@@ -141,24 +141,28 @@ export default function Accounts() {
         }
         // get user by user firstname
         const userColRef = createCollection<User>(Collections.USER)
-        const usersData = await getDocs(query<User>(userColRef, where("firstName", ">=", search)))
+        const usersData = await getDocs(query<User>(userColRef, where("firstName", "==", search)))
         if (!usersData.empty) {
             setSearching(true)
             // get doc for that user    
-            const userData = usersData.docs[0]
-            const data = await getDoc<UserDoc>(createDoc<UserDoc>(Collections.USER_DOC, userData.id))
-            const docData = data.data()
-            const info = {
-                id: userData.id,
-                firstName: userData.data().firstName,
-                lastName: userData.data().lastName,
-                dob: userData.data().dob,
-                address: userData.data().address,
-                gender: userData.data().gender,
-                mobileNumber: userData.data().mobileNumber,
-                doc: docData,
-            } as iUserInfo
-            setApprovedList([info])
+            // const userData = usersData.docs[0];
+            let arr: iUserInfo[] = [];
+            for await (const userData of usersData.docs) {
+                const data = await getDoc<UserDoc>(createDoc<UserDoc>(Collections.USER_DOC, userData.id))
+                const docData = data.data()
+                const info = {
+                    id: userData.id,
+                    firstName: userData.data().firstName,
+                    lastName: userData.data().lastName,
+                    dob: userData.data().dob,
+                    address: userData.data().address,
+                    gender: userData.data().gender,
+                    mobileNumber: userData.data().mobileNumber,
+                    doc: docData,
+                } as iUserInfo
+                arr.push(info);
+            }
+            setApprovedList(arr);
         } else {
             toast("No Data Available")
         }
