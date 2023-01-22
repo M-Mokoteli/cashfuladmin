@@ -50,6 +50,7 @@ export interface User {
 }
 
 export interface UserDoc {
+  bankStatementV2?: boolean;
   id: string; //user id
   bankStatement: {
     status: string;

@@ -1,6 +1,7 @@
 import { id } from 'date-fns/locale'
 import { getDoc, QuerySnapshot, where } from 'firebase/firestore'
 import React, { useContext, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import { StateContext } from '../../../utils/context/MainContext'
 import { Collections } from '../../../utils/firebase/Collections'
 import { createDoc } from '../../../utils/firebase/config'
@@ -15,7 +16,6 @@ import AccountDetailModal from './AccountDetailModal'
 import { iUserInfo } from './Accounts'
 import DocBox from './DocBox'
 import UserBasicInfo from './UserBasicInfo'
-
 interface iAccountInfo {
     info: iUserInfo
     id: string
@@ -34,7 +34,6 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
     const [bankStatement, setBankStatement] = useState(null);
     const [idCard, setIdCard] = useState(null);
     const [proofOfAddress, setProofOfAddress] = useState(null);
-
 
     useEffect(() => {
         if (levels.length > 0)
@@ -83,7 +82,26 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
       load();
     }
 
-    
+    const fetchSignedUrl = async () => {
+        let id = toast.loading("Please wait getting statement for you..");
+        const response = await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/getSignedUrl/"+info.id, {
+            method: 'GET',
+        }).then((res) => res.json());
+        toast.update(id, { render: "All is good", type: "success", isLoading: false, autoClose: 3000 });
+        window.open(
+          response.url,
+          '_blank' 
+        );
+    }
+
+    const fetchNewStatement = async () => {
+      let id = toast.loading("Please wait generating new statement..");
+      await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/newStatement/"+info.id, {
+          method: 'GET',
+      });
+      toast.update(id, { render: "New Statement generated! Click on View Statement to view.", type: "success", isLoading: false, autoClose: 5000 });
+    } 
+
     return (
         <MyCard>
             <Title text='Account Information' />
@@ -100,7 +118,19 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
             <Spacing />
             <Title text='User documents' />
             <Spacing />
-            <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
+            {info?.doc?.bankStatementV2 == true ? (
+              <div style={{ display: 'flex', margin: '20px 0px 40px 0' }}>
+                <Button onClick={() => {
+                    fetchSignedUrl()
+                }}>View Bank Statement</Button>
+                <div style={{ width: '24px' }}></div>
+                <Button seconday={true} onClick={() => {
+                    fetchNewStatement()
+                }}>Fetch New Bank Statement</Button>
+              </div>
+            ) : (
+              <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
+            )}
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={idCard ? idCard['url'] : info?.doc?.idCard?.url || ""} status={idCard ? idCard['status'] : info?.doc?.idCard?.status || ""} infoKey="idCard" />
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={proofOfAddress ? proofOfAddress['url'] : info?.doc?.proofOfAddress?.url || ""} status={proofOfAddress ? proofOfAddress['status'] : info?.doc?.proofOfAddress?.status} infoKey="proofOfAddress" />
             {/* <div className='submitButtin'>
