@@ -34,6 +34,7 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
     const [bankStatement, setBankStatement] = useState(null);
     const [idCard, setIdCard] = useState(null);
     const [proofOfAddress, setProofOfAddress] = useState(null);
+    const [bankStatementV2, setBankStatementV2] = useState(null);
 
     useEffect(() => {
         if (levels.length > 0)
@@ -82,6 +83,12 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
       load();
     }
 
+    const getUpdatedBankStatement = async (docId:string) => {
+      const docColRef = createDoc<any>(Collections.USER_DOC, docId);
+      const docData = await getDoc(docColRef);
+      setBankStatementV2(docData.data().bankStatementV2);
+    }
+
     const fetchSignedUrl = async () => {
         let id = toast.loading("Please wait getting statement for you..");
         const response = await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/getSignedUrl/"+info.id, {
@@ -102,6 +109,15 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
       toast.update(id, { render: "New Statement generated! Click on View Statement to view.", type: "success", isLoading: false, autoClose: 5000 });
     } 
 
+    const requestNewMonoAccount = async () => {
+      let id = toast.loading("Please wait sending request..");
+      await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/newAccountLink/"+info.id, {
+          method: 'GET',
+      });
+      await getUpdatedBankStatement(info.id);
+      toast.update(id, { render: "Request Sent!", type: "success", isLoading: false, autoClose: 3000 });
+    } 
+
     return (
         <MyCard>
             <Title text='Account Information' />
@@ -118,15 +134,22 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
             <Spacing />
             <Title text='User documents' />
             <Spacing />
-            {info?.doc?.bankStatementV2 == true ? (
-              <div style={{ display: 'flex', margin: '20px 0px 40px 0' }}>
-                <Button onClick={() => {
-                    fetchSignedUrl()
-                }}>View Bank Statement</Button>
-                <div style={{ width: '24px' }}></div>
-                <Button seconday={true} onClick={() => {
-                    fetchNewStatement()
-                }}>Fetch New Bank Statement</Button>
+            {(info?.doc?.bankStatementV2 == true || info?.doc?.bankStatementV2 == false) ? (
+              <div>
+                <h5>Mono Account Link is <b>{bankStatementV2 == null ? info?.doc?.bankStatementV2 == false ? 'Pending' : 'Done' : bankStatementV2 ? 'Done' : 'Pending'}</b></h5>
+                <div style={{ display: 'flex', margin: '20px 0px 40px 0' }}>
+                  <Button onClick={() => {
+                      fetchSignedUrl()
+                  }}>View Bank Statement</Button>
+                  <div style={{ width: '24px' }}></div>
+                  <Button seconday={true} onClick={() => {
+                      fetchNewStatement()
+                  }}>Fetch New Bank Statement</Button>
+                  <div style={{ width: '24px' }}></div>
+                  <Button seconday={true} onClick={() => {
+                      requestNewMonoAccount()
+                  }}>Ask User to Link New Account With Mono</Button>
+                </div>
               </div>
             ) : (
               <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
