@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Button from '../../layout/form/Button'
-import { LoanRequest, STATUS, UserDoc } from '../../../utils/interface/Models'
+import { LoanRequest, STATUS, User, UserDoc } from '../../../utils/interface/Models'
 import { QuerySnapshot, updateDoc, where } from 'firebase/firestore'
 import { Collections } from '../../../utils/firebase/Collections'
 import { createDoc } from '../../../utils/firebase/config'
@@ -10,12 +10,14 @@ import { initLoadData, URHpopulateData } from '../home/HomeUtils';
 interface iDocBox {
     id: string
     status: string
-    url: string
+    url?: string
     infoKey: string
     isPdf?: boolean
     getUpdatedDocs: Function
+    getUrl?: Function
+    isBankStatementV2?: boolean
 }
-export default function DocBox({ id, status, url, infoKey, isPdf = false,  getUpdatedDocs }: iDocBox) {
+export default function DocBox({ id, status, url = '', infoKey, isPdf = false,  getUpdatedDocs, getUrl, isBankStatementV2 }: iDocBox) {
     const { levels } = useContext(StateContext);
     const [requests, setRequests] = useState<LoanRequest[]>([]);
     const [isLoader, setIsLoader] = useState(false);
@@ -31,6 +33,11 @@ export default function DocBox({ id, status, url, infoKey, isPdf = false,  getUp
             console.log(Collections.USER_DOC, id);
             const docRef = createDoc<UserDoc>(Collections.USER_DOC, id)
             await updateDoc(docRef, { [`${infoKey}.status`]: _status.toString() })
+
+            if(infoKey == "bankStatementV2" && _status == "approved"){
+                const docRefs = createDoc<User>(Collections.USER, id)
+                await updateDoc(docRefs, { monoLinked: true })
+            }
             getUpdatedDocs(id,setIsLoader);
         }
     }
@@ -38,11 +45,17 @@ export default function DocBox({ id, status, url, infoKey, isPdf = false,  getUp
     return (
         <div className='flex gap-8 justify-start items-center mb-8'>
             <div className='p-2 bg-gray-200 rounded-md'>
-                {isPdf ? <img onClick={() => {
-                    window.open(url, '_blank');
-                }} src={'https://cdn1.iconfinder.com/data/icons/hawcons/32/699581-icon-70-document-file-pdf-256.png'} alt="" width={120} height={120} className='object-cover rounded-md cursor-pointer' /> : <img src={url} alt="" onClick={() => {
-                    window.open(url, '_blank');
-                }} width={120} height={120} className='object-cover rounded-md' />}
+                {isBankStatementV2 ? (
+                    <Button seconday={true} onClick={() => {
+                        getUrl && getUrl()
+                    }}>View Statement</Button>
+                ) : (
+                    isPdf ? <img onClick={() => {
+                        window.open(url, '_blank');
+                    }} src={'https://cdn1.iconfinder.com/data/icons/hawcons/32/699581-icon-70-document-file-pdf-256.png'} alt="" width={120} height={120} className='object-cover rounded-md cursor-pointer' /> : <img src={url} alt="" onClick={() => {
+                        window.open(url, '_blank');
+                    }} width={120} height={120} className='object-cover rounded-md' />
+                )}
             </div>
             <div className='flex flex-col gap-2'>
                 {isLoader ? 

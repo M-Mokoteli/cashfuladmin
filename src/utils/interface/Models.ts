@@ -39,6 +39,7 @@ export class LoanRequest {
 
 // user
 export interface User {
+  monoLinked?: boolean;
   id: string;
   firstName: string;
   lastName: string;
@@ -50,6 +51,10 @@ export interface User {
 }
 
 export interface UserDoc {
+  bankStatementV2?: {
+    status: string;
+    url: string;
+  };
   id: string; //user id
   bankStatement: {
     status: string;

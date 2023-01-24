@@ -1,6 +1,7 @@
 import { id } from 'date-fns/locale'
 import { getDoc, QuerySnapshot, where } from 'firebase/firestore'
 import React, { useContext, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import { StateContext } from '../../../utils/context/MainContext'
 import { Collections } from '../../../utils/firebase/Collections'
 import { createDoc } from '../../../utils/firebase/config'
@@ -15,7 +16,6 @@ import AccountDetailModal from './AccountDetailModal'
 import { iUserInfo } from './Accounts'
 import DocBox from './DocBox'
 import UserBasicInfo from './UserBasicInfo'
-
 interface iAccountInfo {
     info: iUserInfo
     id: string
@@ -34,7 +34,7 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
     const [bankStatement, setBankStatement] = useState(null);
     const [idCard, setIdCard] = useState(null);
     const [proofOfAddress, setProofOfAddress] = useState(null);
-
+    const [bankStatementV2, setBankStatementV2] = useState(null);
 
     useEffect(() => {
         if (levels.length > 0)
@@ -76,14 +76,51 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
     const getUpdatedDocs = async (docId:string, setIsLoader:Function) => {
       const docColRef = createDoc<any>(Collections.USER_DOC, docId);
       const docData = await getDoc(docColRef);
-      setBankStatement(docData.data().bankStatement);
+      if(docData.data().bankStatementV2 != null){
+        setBankStatement(docData.data().bankStatementV2);
+      }else{
+        setBankStatement(docData.data().bankStatement);
+      }
       setIdCard(docData.data().idCard);
       setProofOfAddress(docData.data().proofOfAddress);
       setIsLoader(false);
       load();
     }
 
-    
+    const getUpdatedBankStatement = async (docId:string) => {
+      const docColRef = createDoc<any>(Collections.USER_DOC, docId);
+      const docData = await getDoc(docColRef);
+      setBankStatementV2(docData.data().bankStatementV2);
+    }
+
+    const fetchSignedUrl = async () => {
+        let id = toast.loading("Please wait getting statement for you..");
+        const response = await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/getSignedUrl/"+info.id, {
+            method: 'GET',
+        }).then((res) => res.json());
+        toast.update(id, { render: "All is good", type: "success", isLoading: false, autoClose: 3000 });
+        window.open(
+          response.url,
+          '_blank' 
+        );
+    }
+
+    const fetchNewStatement = async () => {
+      let id = toast.loading("Please wait generating new statement..");
+      await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/newStatement/"+info.id, {
+          method: 'GET',
+      });
+      toast.update(id, { render: "New Statement generated! Click on View Statement to view.", type: "success", isLoading: false, autoClose: 5000 });
+    } 
+
+    const requestNewMonoAccount = async () => {
+      let id = toast.loading("Please wait sending request..");
+      await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/newAccountLink/"+info.id, {
+          method: 'GET',
+      });
+      await getUpdatedBankStatement(info.id);
+      toast.update(id, { render: "Request Sent!", type: "success", isLoading: false, autoClose: 3000 });
+    } 
     return (
         <MyCard>
             <Title text='Account Information' />
@@ -100,7 +137,22 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
             <Spacing />
             <Title text='User documents' />
             <Spacing />
-            <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
+            {info?.doc?.bankStatementV2 != null ? (
+              <>
+                <Button seconday={true} onClick={() => {
+                  fetchNewStatement()
+                }}>Fetch New Bank Statement</Button>
+                <div style={{ height: '12px' }}></div>
+                <Button seconday={true} onClick={() => {
+                    requestNewMonoAccount()
+                }}>Ask User to Link New Account With Mono</Button>
+                <Spacing />
+                <Spacing />
+                <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} getUrl={fetchSignedUrl} isBankStatementV2={true}  status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatementV2?.status || ""} infoKey="bankStatementV2"/>
+              </>
+            ) : (
+              <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
+            )}
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={idCard ? idCard['url'] : info?.doc?.idCard?.url || ""} status={idCard ? idCard['status'] : info?.doc?.idCard?.status || ""} infoKey="idCard" />
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={proofOfAddress ? proofOfAddress['url'] : info?.doc?.proofOfAddress?.url || ""} status={proofOfAddress ? proofOfAddress['status'] : info?.doc?.proofOfAddress?.status} infoKey="proofOfAddress" />
             {/* <div className='submitButtin'>

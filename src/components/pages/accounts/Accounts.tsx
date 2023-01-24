@@ -22,7 +22,8 @@ export interface iUserInfo {
     address?: string,
     mobileNumber?: string,
     gender?: string,
-    doc: UserDoc
+    doc: UserDoc,
+    monoLinked?: boolean,
 }
 
 // Page
@@ -42,17 +43,19 @@ export default function Accounts() {
         const q1 = query(docColRef, where("bankStatement.status", "==", "pending"))
         const q2 = query(docColRef, where("idCard.status", "==", "pending"))
         const q3 = query(docColRef, where("proofOfAddress.status", "==", "pending"))
+        const q5 = query(docColRef, where("bankStatementV2.status", "==", "pending"))
 
         const q4 = query(docColRef,
             where("bankStatement.status", "==", "approved"),
+            where("bankStatementV2.status", "==", "approved"),
             where("idCard.status", "==", "approved"),
             where("proofOfAddress.status", "==", "approved"),
             orderBy(documentId()),
             limit(Define.PAGE_SIZE)
         )
 
-        const [d1, d2, d3, d4] = await Promise.all([getDocs(q1), getDocs(q2), getDocs(q3), getDocs(q4)])
-        setPendingList(await getPendingUserList(d1, d2, d3));
+        const [d1, d2, d3, d4, d5] = await Promise.all([getDocs(q1), getDocs(q2), getDocs(q3), getDocs(q4), getDocs(q5)])
+        setPendingList(await getPendingUserList(d1, d2, d3, d5));
         const [mylast, approveList] = await getApprovedList(d4);
         if (approveList) {
             setApprovedList(approveList as iUserInfo[])
@@ -158,6 +161,7 @@ export default function Accounts() {
                     address: userData.data().address,
                     gender: userData.data().gender,
                     mobileNumber: userData.data().mobileNumber,
+                    monoLinked: userData.data().monoLinked ?? false,
                     doc: docData,
                 } as iUserInfo
                 arr.push(info);
@@ -217,7 +221,8 @@ export default function Accounts() {
 const getPendingUserList = async (
     d1: QuerySnapshot<UserDoc>,
     d2: QuerySnapshot<UserDoc>,
-    d3: QuerySnapshot<UserDoc>
+    d3: QuerySnapshot<UserDoc>,
+    d4: QuerySnapshot<UserDoc>
 ): Promise<iUserInfo[]> => {
     const pendingDuplist = [] as iUserInfo[]
 
@@ -239,6 +244,14 @@ const getPendingUserList = async (
     }
     if (!d3.empty) {
         d3.docs.forEach(item => {
+            pendingDuplist.push({
+                id: item.id,
+                doc: item.data()
+            })
+        })
+    }
+    if (!d4.empty) {
+        d4.docs.forEach(item => {
             pendingDuplist.push({
                 id: item.id,
                 doc: item.data()
