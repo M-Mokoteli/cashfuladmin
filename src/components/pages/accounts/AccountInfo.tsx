@@ -76,7 +76,11 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
     const getUpdatedDocs = async (docId:string, setIsLoader:Function) => {
       const docColRef = createDoc<any>(Collections.USER_DOC, docId);
       const docData = await getDoc(docColRef);
-      setBankStatement(docData.data().bankStatement);
+      if(docData.data().bankStatementV2 != null){
+        setBankStatement(docData.data().bankStatementV2);
+      }else{
+        setBankStatement(docData.data().bankStatement);
+      }
       setIdCard(docData.data().idCard);
       setProofOfAddress(docData.data().proofOfAddress);
       setIsLoader(false);
@@ -117,7 +121,6 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
       await getUpdatedBankStatement(info.id);
       toast.update(id, { render: "Request Sent!", type: "success", isLoading: false, autoClose: 3000 });
     } 
-
     return (
         <MyCard>
             <Title text='Account Information' />
@@ -134,23 +137,19 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
             <Spacing />
             <Title text='User documents' />
             <Spacing />
-            {(info?.doc?.bankStatementV2 == true || info?.doc?.bankStatementV2 == false) ? (
-              <div>
-                <h5>Mono Account Link is <b>{bankStatementV2 == null ? info?.doc?.bankStatementV2 == false ? 'Pending' : 'Done' : bankStatementV2 ? 'Done' : 'Pending'}</b></h5>
-                <div style={{ display: 'flex', margin: '20px 0px 40px 0' }}>
-                  <Button onClick={() => {
-                      fetchSignedUrl()
-                  }}>View Bank Statement</Button>
-                  <div style={{ width: '24px' }}></div>
-                  <Button seconday={true} onClick={() => {
-                      fetchNewStatement()
-                  }}>Fetch New Bank Statement</Button>
-                  <div style={{ width: '24px' }}></div>
-                  <Button seconday={true} onClick={() => {
-                      requestNewMonoAccount()
-                  }}>Ask User to Link New Account With Mono</Button>
-                </div>
-              </div>
+            {info?.doc?.bankStatementV2 != null ? (
+              <>
+                <Button seconday={true} onClick={() => {
+                  fetchNewStatement()
+                }}>Fetch New Bank Statement</Button>
+                <div style={{ height: '12px' }}></div>
+                <Button seconday={true} onClick={() => {
+                    requestNewMonoAccount()
+                }}>Ask User to Link New Account With Mono</Button>
+                <Spacing />
+                <Spacing />
+                <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} getUrl={fetchSignedUrl} isBankStatementV2={true}  status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatementV2?.status || ""} infoKey="bankStatementV2"/>
+              </>
             ) : (
               <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
             )}
