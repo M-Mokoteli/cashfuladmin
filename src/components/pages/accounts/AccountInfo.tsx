@@ -77,7 +77,7 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
       const docColRef = createDoc<any>(Collections.USER_DOC, docId);
       const docData = await getDoc(docColRef);
       if(docData.data().bankStatementV2 != null){
-        setBankStatement(docData.data().bankStatementV2);
+        setBankStatementV2(docData.data().bankStatementV2);
       }else{
         setBankStatement(docData.data().bankStatement);
       }
@@ -148,7 +148,7 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
                 }}>Ask User to Link New Account With Mono</Button>
                 <Spacing />
                 <Spacing />
-                <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} getUrl={fetchSignedUrl} isBankStatementV2={true}  status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatementV2?.status || ""} infoKey="bankStatementV2"/>
+                <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} getUrl={fetchSignedUrl} isBankStatementV2={true}  status={bankStatementV2 ? bankStatementV2['status'] :info?.doc?.bankStatementV2?.status || ""} infoKey="bankStatementV2"/>
               </>
             ) : (
               <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
