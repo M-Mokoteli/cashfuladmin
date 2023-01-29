@@ -408,3 +408,8 @@ p.paraMs{
   }
   
   /* Loader Ends */
+
+  .custom-flex{
+    display: flex;
+    justify-content: space-between;
+  }

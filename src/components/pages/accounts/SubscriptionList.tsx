@@ -26,6 +26,7 @@ import MySelect from "../../layout/form/MySelect";
 import FbPaginate from "../../layout/common/FbPaginate";
 import axios from "axios";
 import { toast } from "react-toastify";
+import ShowBalance from "./Balance";
 
 interface iAccountList {
   searching: boolean;
@@ -56,7 +57,6 @@ export default function SubscriptionList({
   const [updateCardList, setUpdateCardList] = useState(null as any);
 
   const onDetailsClick = (item: any) => {
-    console.log(item);
     setItem(item);
     setShowDetails(true);
     const repayments = getRepayments(item.id);
@@ -70,8 +70,6 @@ export default function SubscriptionList({
   };
 
   useEffect(() => {
-    console.log("Repayments", repayments);
-    console.log("Auth codes", authCodes);
     if (repayments) {
       for (var i = 0; i < repayments?.length; i++) {
         if (repayments[i].status === "upcoming") {
@@ -225,7 +223,7 @@ export default function SubscriptionList({
       }
     }
   };
-
+  
   return (
     <MyCard>
       <div className="Subsmain">
@@ -510,6 +508,7 @@ export default function SubscriptionList({
                 )}
               </div>
             </div>
+            {item != null && (<ShowBalance item={item} />)}
           </>
         </Modal>
       </div>
