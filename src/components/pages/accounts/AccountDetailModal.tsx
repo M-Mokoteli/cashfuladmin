@@ -21,16 +21,22 @@ export default function AccountDetailModal({ info, show, setShow }: iModal) {
     const nav = useNavigate()
     const [pay, setPay] = useState<iPaymentInfos>({} as iPaymentInfos)
     const [back, setBack] = useState<iBackgroundInfo>({} as iBackgroundInfo)
+    const [authData, setAuthData] = useState<any>(undefined);
 
     useEffect(() => {
+        setAuthData(undefined);
         const load = async (id: string) => {
             if (id == "") {
                 return;
             }
             const backgroundDoc = getDoc<iBackgroundInfo>(createDoc(Collections.BACK_INFO, id))
             const bankMtnDoc = getDoc<iPaymentInfos>(createDoc(Collections.PAYMENT_INFO, id))
-            const [backData, payData] = await Promise.all([backgroundDoc, bankMtnDoc])
+            const authCodes = getDoc<iPaymentInfos>(createDoc(Collections.AUTHORIZATION_CODES, id))
+            const [backData, payData, authData] = await Promise.all([backgroundDoc, bankMtnDoc, authCodes])
             //console.log(backData, payData);
+            if(authData.exists()){
+                setAuthData(authData.data()!);
+            }
             if (payData.exists())
                 setPay(payData.data()!)
             if (backData.exists()) {
@@ -59,6 +65,7 @@ export default function AccountDetailModal({ info, show, setShow }: iModal) {
                     <UserBasicInfo title1='First Name' value1={info.firstName || "-"} title2='Last Name' value2={info.lastName || "-"} />
                     <UserBasicInfo title1='Date of Birth' value1={info.dob || "-"} title2='Gender' value2={info.gender || "-"} />
                     <UserBasicInfo title1='Mobile Number' value1={info.mobileNumber || "-"} title2='Address' value2={info.address || "-"} />
+                    <UserBasicInfo title1='Email-Id' value1={authData && authData.customer.email || "-"} title2='' value2={''} />
 
                     <UserBasicInfo title1='Credit Score' value1={back.creditScore || "-"} title2='Credit Score Value' value2={back.creditScoreValue || "-"} />
                     <UserBasicInfo title1='Small Business Owner' value1={back.isSmallBusinessOwner ? "Yes" : "No"} title2='Business Offering' value2={back.businessOffering || "-"} />
