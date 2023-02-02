@@ -413,3 +413,29 @@ p.paraMs{
     display: flex;
     justify-content: space-between;
   }
+
+  .charge-input-container{
+    margin-top: 0px !important;
+    display: flex;
+    justify-content: flex-start;
+  }
+.charge-input[type="number"] {
+    width: 400px;
+    height: 20px;
+    padding: 20px;
+    padding-right: 100px;
+    border: solid 1px #e5e7eb;
+}
+
+.charge-input[type="submit"] {
+    margin-left: -100px;
+    height: 42px;
+    border-radius: 0.375rem;
+    width: 100px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background: rgb(54 162 218 / var(--tw-bg-opacity));
+    color: white;
+    border: 0;
+    -webkit-appearance: none;
+}
