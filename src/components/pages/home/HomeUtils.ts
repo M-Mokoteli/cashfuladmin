@@ -243,6 +243,15 @@ export const updateBalanceRemaining = async (docId: string, paidAmount: string) 
     await updateDoc(lrDocRef, { "balanceRemaining": balanceRemaining.toFixed(2) });
 }
 
+export const updateMinimumCharges = async (docId: string, paidAmount: string, isRepayments: boolean) => {
+    const lrDocRef = createDoc<any>(Collections.LOAN_REQUEST, docId);
+    const loanRequestRef = await getDoc(lrDocRef);
+    const loanRequest = loanRequestRef.data();
+    const finalPaidAmount = parseInt(loanRequest.paidAmount ?? '0') + parseInt(paidAmount);
+    const minimumCharges = parseInt(loanRequest.totalRepayable) - parseInt(paidAmount);
+    await updateDoc(lrDocRef, { "totalRepayable": minimumCharges.toFixed(2), "paidAmount": finalPaidAmount.toFixed(2) });
+}
+
 export const updateRepayments = async (reqObj: any) => {
     const {isInstallment, docId, repaymentId, isfinal, reference, message, status, paymentAmount} = reqObj;
     var date = new Date()

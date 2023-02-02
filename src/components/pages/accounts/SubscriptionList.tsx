@@ -19,6 +19,7 @@ import {
   updateRepayments,
   initUpdateCardList,
   onUpdateCardStatus,
+  updateMinimumCharges,
 } from "../home/HomeUtils";
 import { QuerySnapshot, Timestamp, where } from "firebase/firestore";
 import Define from "../../../utils/Define";
@@ -49,6 +50,8 @@ export default function SubscriptionList({
   const [showContent, setShowContent] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
   const [item, setItem] = useState(null as any);
+  const [chargeCard, setchargeCard] = useState("" as any);
+  const [defaultSelected, setdefaultSelected] = useState(null as any);
   const [authCodes, setAuthCodes] = useState(null as any);
   const [repayments, setRepayments] = useState(null as any);
   const [nextInstallmentDate, setNextInstallmentDate] = useState(null as any);
@@ -79,9 +82,7 @@ export default function SubscriptionList({
           setNextInstallmentDate(
             repayments[i]?.dueDate.toDate().toDateString()
           );
-          setInstallment(
-            parseFloat(repayments[i]?.amount).toFixed(2)
-          );
+          setInstallment(parseFloat(repayments[i]?.amount).toFixed(2));
           break;
         } else {
           setIsPaidInstallments("paid");
@@ -148,13 +149,13 @@ export default function SubscriptionList({
     URHpopulateData(data, levels, setRequests);
   };
 
-  const getIsFinal =  (index: number, repayments: any) => {
+  const getIsFinal = (index: number, repayments: any) => {
     let count = 0;
-    repayments.forEach((data: { status: any; }) => {
-      if(data.status && data.status == "paid" ){
+    repayments.forEach((data: { status: any }) => {
+      if (data.status && data.status == "paid") {
         count++;
       }
-    })
+    });
     return index == count && index == repayments.length;
   };
 
@@ -212,7 +213,9 @@ export default function SubscriptionList({
                 await updateRepayments(resObj);
               }
               if (response.data.data.status !== "success") {
-                toast("Some error occurred : "+ response.data.data.gateway_response);
+                toast(
+                  "Some error occurred : " + response.data.data.gateway_response
+                );
               }
             })
             .catch((error) => {
@@ -223,7 +226,78 @@ export default function SubscriptionList({
       }
     }
   };
-  
+
+  useEffect(() => {
+    if (requests.length > 0) {
+      requests.forEach((item: LoanRequest) => {
+        if (chargeCard != "" && item.id == defaultSelected) {
+          setdefaultSelected(null);
+          setchargeCard("");
+          onDetailsClick(item);
+          return;
+        }
+      });
+    }
+  }, [requests]);
+
+  const transactAMinimumValue = async () => {
+    if (authCodes) {
+      const yes = confirm("Are you sure you want to charge card?");
+      if (yes === true) {
+        const article = {
+          authorization_code: authCodes.authorization.authorization_code,
+          email: authCodes.customer.email,
+          amount: parseInt(chargeCard) * 100,
+          currency: "ZAR",
+        };
+        axios
+          .post(
+            "https://api.paystack.co/transaction/charge_authorization",
+            article,
+            {
+              headers: {
+                Authorization: `Bearer sk_live_ad543dd59a6282b947f04ae2910723fefa1a3d30`,
+              },
+            }
+          )
+          .then(async (response) => {
+            if (response.data.data.status == "success") {
+              setdefaultSelected(item.id);
+              // if(repayments && repayments.length > 0){
+              //   for await (const repayment of repayments) {
+              //     if(repayment.status == "upcoming"){
+              //       parseInt(repayment.amount) - parseInt(chargeCard);
+              //       break;
+              //     }
+              //   }
+              //   await updateMinimumCharges(item.id, chargeCard, true, re);
+              // }else{
+              await updateMinimumCharges(item.id, chargeCard, false);
+              // }
+              await initLoadData(
+                setPage,
+                populateData,
+                where("loanStatus", "==", STATUS.approved)
+              );
+              toast(
+                "Card Charged Status : " + response.data.data.gateway_response
+              );
+            } else {
+              setdefaultSelected(null);
+              setchargeCard("");
+              toast(
+                "Card Charged Status : " + response.data.data.gateway_response
+              );
+            }
+          })
+          .catch((error) => {
+            toast("Error in paystack : " + JSON.stringify(error));
+            console.log(error);
+          });
+      }
+    }
+  };
+
   return (
     <MyCard>
       <div className="Subsmain">
@@ -243,7 +317,7 @@ export default function SubscriptionList({
 
                 term: item.paymentTime + "days",
                 amount: Define.CURRENCY + item.loanAmount,
-                interest: parseFloat(item.interest) * 100 + "%",  
+                interest: parseFloat(item.interest) * 100 + "%",
                 total: Define.CURRENCY + item.totalRepayable,
                 Action: (
                   <Button
@@ -344,7 +418,9 @@ export default function SubscriptionList({
         >
           <>
             <div className="model-header">
-              <div className="modal-title">{item?.firstName + " " + item?.lastName}</div>
+              <div className="modal-title">
+                {item?.firstName + " " + item?.lastName}
+              </div>
               <div className="closeBtn2" onClick={() => setShowDetails(false)}>
                 X
               </div>
@@ -359,8 +435,10 @@ export default function SubscriptionList({
                   <p className="title-output">
                     R{" "}
                     {item?.balanceRemaining == ""
-                      ? (parseFloat(item?.totalRepayable).toFixed(2)).toString()
-                      : (parseFloat(item?.balanceRemaining).toFixed(2)).toString()}
+                      ? parseFloat(item?.totalRepayable).toFixed(2).toString()
+                      : parseFloat(item?.balanceRemaining)
+                          .toFixed(2)
+                          .toString()}
                   </p>
                 </div>
               </div>
@@ -393,7 +471,7 @@ export default function SubscriptionList({
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-1 fullwidt">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-1 fullwidth">
               <div
                 className="col-span-1  rounded-md"
                 style={{ paddingTop: "12px" }}
@@ -472,7 +550,7 @@ export default function SubscriptionList({
                 {repayments !== null && repayments.length === 0 && (
                   <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 tableData ">
                     <thead className="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-gray-700 dark:text-gray-400">
-                      <tr >
+                      <tr>
                         <th className="px-6 py-3">Repayment</th>
                         <th className="px-6 py-3">Due Date</th>
                         <th className="px-6 py-3">Amount</th>
@@ -483,12 +561,20 @@ export default function SubscriptionList({
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" style={{textAlign:'center'}}>
+                      <tr
+                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                        style={{ textAlign: "center" }}
+                      >
                         <td>{item.repayment}</td>
                         <td>{nextInstallmentDate}</td>
                         <td>R {parseFloat(item.totalRepayable).toFixed(2)}</td>
-                        <td>{item.paymentStatus ?? (item.loanStatus == 'approved' ? 'upcoming' : item.loanStatus)}</td>
-                        <td>{item.message ?? 'N/A'}</td>
+                        <td>
+                          {item.paymentStatus ??
+                            (item.loanStatus == "approved"
+                              ? "upcoming"
+                              : item.loanStatus)}
+                        </td>
+                        <td>{item.message ?? "N/A"}</td>
                         <td>
                           {item.paidDate &&
                             item.paidDate.toString().split("T")[0]}
@@ -508,7 +594,23 @@ export default function SubscriptionList({
                 )}
               </div>
             </div>
-            {item != null && (<ShowBalance item={item} />)}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+              <div className="charge-input-container">
+                <input
+                  type="number"
+                  className="charge-input"
+                  placeholder="Charge a minimum value"
+                  value={chargeCard}
+                  onChange={(e) => setchargeCard(e.target.value)}
+                />
+                <input
+                  type="submit"
+                  className="charge-input"
+                  onClick={() => transactAMinimumValue()}
+                />
+              </div>
+            </div>
+            {item != null && <ShowBalance item={item} />}
           </>
         </Modal>
       </div>
