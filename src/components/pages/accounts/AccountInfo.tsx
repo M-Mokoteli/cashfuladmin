@@ -137,7 +137,7 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
             <Spacing />
             <Title text='User documents' />
             <Spacing />
-            {info?.doc?.bankStatementV2 != null ? (
+            {info?.doc?.bankStatementV2 != null && (
               <>
                 <Button seconday={true} onClick={() => {
                   fetchNewStatement()
@@ -150,9 +150,8 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
                 <Spacing />
                 <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} getUrl={fetchSignedUrl} isBankStatementV2={true}  status={bankStatementV2 ? bankStatementV2['status'] :info?.doc?.bankStatementV2?.status || ""} infoKey="bankStatementV2"/>
               </>
-            ) : (
+              )}
               <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={bankStatement ? bankStatement['url'] : info?.doc?.bankStatement?.url || ""} status={bankStatement ? bankStatement['status'] :info?.doc?.bankStatement?.status || ""} infoKey="bankStatement" isPdf={true} />
-            )}
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={idCard ? idCard['url'] : info?.doc?.idCard?.url || ""} status={idCard ? idCard['status'] : info?.doc?.idCard?.status || ""} infoKey="idCard" />
             <DocBox getUpdatedDocs={getUpdatedDocs} id={info?.id || ""} url={proofOfAddress ? proofOfAddress['url'] : info?.doc?.proofOfAddress?.url || ""} status={proofOfAddress ? proofOfAddress['status'] : info?.doc?.proofOfAddress?.status} infoKey="proofOfAddress" />
             {/* <div className='submitButtin'>
