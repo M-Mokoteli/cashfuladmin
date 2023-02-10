@@ -31,10 +31,23 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
     const { levels } = useContext(StateContext);
     const [page, setPage] = useState(0);
     const [requests, setRequests] = useState<LoanRequest[]>([]);
+    const [monoStatus, setMonoStatus] = useState('');
+    const [monoAuthId, setMonoAuthId] = useState('');
     const [bankStatement, setBankStatement] = useState(null);
     const [idCard, setIdCard] = useState(null);
     const [proofOfAddress, setProofOfAddress] = useState(null);
     const [bankStatementV2, setBankStatementV2] = useState(null);
+    
+    const getMonoStatus = async () => {
+      const docColRef = createDoc<any>(Collections.USER, info.id);
+      const docData = await getDoc(docColRef);
+      if(docData.data().monoStatus != undefined){
+        setMonoStatus(docData.data().monoStatus);
+      }else if(docData.data().monoAuthId != undefined){
+        setMonoStatus('Need Data Sync');
+      }
+      setMonoAuthId(docData.data().monoAuthId);
+    }
 
     useEffect(() => {
         if (levels.length > 0)
@@ -51,6 +64,7 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
           setIdCard(null);
           setProofOfAddress(null);
         }
+        getMonoStatus();
       },[info.id])
 
       const populateData = async (data: QuerySnapshot<LoanRequest>) => {
@@ -105,6 +119,17 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
         );
     }
 
+    const syncData = async () => {
+      let id = toast.loading("Please wait syncing data..");
+      await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/sync-data/"+monoAuthId, {
+          method: 'GET',
+      });
+      toast.update(id, { render: "Sync Success", type: "success", isLoading: false, autoClose: 3000 });
+      setTimeout(() => {
+        getMonoStatus();
+      }, 3000);
+    }
+
     const fetchNewStatement = async () => {
       let id = toast.loading("Please wait generating new statement..");
       await fetch("https://us-central1-cashful-9f540.cloudfunctions.net/users/newStatement/"+info.id, {
@@ -128,6 +153,17 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
             <UserBasicInfo title1='First Name' value1={info.firstName || "-"} title2='Last Name' value2={info.lastName || "-"} />
             <UserBasicInfo title1='Date of Birth' value1={info.dob || "-"} title2='Gender' value2={info.gender || "-"} />
             <UserBasicInfo title1='Mobile Number' value1={info.mobileNumber || "-"} title2='Address' value2={info.address || "-"} />
+            {monoStatus != '' && (
+              <>
+              <br />
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div>Mono Status: {monoStatus} &nbsp;&nbsp;&nbsp;</div>
+              <Button seconday onClick={async () => { 
+                await syncData();
+               }}>Sync Data with Mono</Button>
+              </div>
+              </>
+            )}
             <Spacing />
             <Button fullWidth onClick={() => {
                 setShow(true)
