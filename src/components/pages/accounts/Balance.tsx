@@ -54,9 +54,10 @@ function ShowBalance(props: any) {
             setBalance(result.status);
             return;
         }
-        setBalance("R " + result.balance.balance);
+        let bal = result.balance.balance / 100;
+        setBalance("R " + bal);
         const docColRef = createDoc<any>(Collections.USER, props.item.userId);
-        await updateDoc(docColRef, { balance: result.balance.balance });
+        await updateDoc(docColRef, { balance: bal });
       })
       .catch((error) => {
         console.log("error", error);
@@ -108,7 +109,7 @@ function ShowBalance(props: any) {
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <div className="col-span-1 p-4 border rounded-md circleDataMain">
+      <div className="col-span-1 p-3 border rounded-md circleDataMain">
         <div>
           <p className="title-text">Last Fetched Balance:</p>
           <div className="spacing"></div>
@@ -128,7 +129,7 @@ function ShowBalance(props: any) {
             <>
               <p className="title-output">{balance}</p>
               <div className="spacing"></div>
-              <p className="title-text">
+              {/* <p className="title-text">
                 <Button
                   style={{ fontSize: "16px" }}
                   fullWidth
@@ -136,12 +137,12 @@ function ShowBalance(props: any) {
                 >
                   Fetch Latest Balance
                 </Button>
-              </p>
+              </p> */}
             </>
           )}
         </div>
       </div>
-      <div className="col-span-1 p-4 border rounded-md circleDataMain">
+      <div className="col-span-1 p-3 border rounded-md circleDataMain">
         <div>
           <p className="title-text">Last Fetched Income:</p>
           <div className="spacing"></div>
@@ -173,7 +174,7 @@ function ShowBalance(props: any) {
                 })}
 
               <div className="spacing"></div>
-              <p className="title-text">
+              {/* <p className="title-text">
                 <Button
                   style={{ fontSize: "16px" }}
                   fullWidth
@@ -181,7 +182,7 @@ function ShowBalance(props: any) {
                 >
                   Fetch Latest Income
                 </Button>
-              </p>
+              </p> */}
             </>
           )}
         </div>
