@@ -121,4 +121,13 @@ export interface iBackgroundInfo {
   savingMonthly?: string; //Monthly Savings
   isPartOfStockvel?: boolean; //Stokvel Participation
   stockvelContribution?: string; //Stokvel Contribution
+
+  firstReferenceName?: string; //First Reference Name
+  secondReferenceName?: string; // Second Reference Name
+  additionalSourceIncome?: string; // Additional Source of Income
+  additionalIncome?: string; // Additional Income
+  sourceOfIncome?: string; // Source of Income
+  incomeFrequency?: string; // Income Frequency
+  businessrevenueMonthly?: string; // Business Revenue Monthly
+  businessExpenceMonthly?: string; // Business Expenses Monthly
 }

@@ -65,17 +65,23 @@ export default function AccountDetailModal({ info, show, setShow }: iModal) {
                     <UserBasicInfo title1='First Name' value1={info.firstName || "-"} title2='Last Name' value2={info.lastName || "-"} />
                     <UserBasicInfo title1='Date of Birth' value1={info.dob || "-"} title2='Gender' value2={info.gender || "-"} />
                     <UserBasicInfo title1='Mobile Number' value1={info.mobileNumber || "-"} title2='Address' value2={info.address || "-"} />
-                    <UserBasicInfo title1='Email-Id' value1={authData && authData.customer.email || "-"} title2='' value2={''} />
+                    <UserBasicInfo title1='Email-Id' value1={authData ? (authData.customer != undefined ? authData.customer.email : authData.data.customer.email) : ''} title2='' value2={''} />
 
                     <UserBasicInfo title1='Credit Score' value1={back.creditScore || "-"} title2='Credit Score Value' value2={back.creditScoreValue || "-"} />
                     <UserBasicInfo title1='Small Business Owner' value1={back.isSmallBusinessOwner ? "Yes" : "No"} title2='Business Offering' value2={back.businessOffering || "-"} />
+
                     <UserBasicInfo title1='Length of Operations' value1={back.lengthOfOperation || "-"} title2='Initial Business Financing' value2={back.sourceOfFinancing || "-"} />
-                    <UserBasicInfo title1='Business Investment To-Date' value1={back.investmentToDate || "-"} title2='Business Income Per Month' value2={back.monthlyIncome || "-"} />
-                    <UserBasicInfo title1='Business Expenses Per Month' value1={back.monthlyExpense || "-"} title2='Highest Level of Education' value2={back.highestLevelOfEducation || "-"} />
+                    <UserBasicInfo title1='Business Investment To-Date' value1={back.investmentToDate || "-"} title2='Business Revenue Monthly' value2={back.businessrevenueMonthly || "-"} />
+                    <UserBasicInfo title1='Business Expenses Monthly' value1={back.businessExpenceMonthly || "-"} title2='Income Per Month' value2={back.monthlyIncome || "-"} />
+                    <UserBasicInfo title1='Expenses Per Month' value1={back.monthlyExpense || "-"} title2='Highest Level of Education' value2={back.highestLevelOfEducation || "-"} />
                     <UserBasicInfo title1='Monthly Savings' value1={back.savingMonthly || "-"} title2='Stokvel Participation' value2={back.isPartOfStockvel ? "Yes" : "No"} />
+
+                    <UserBasicInfo title1='First Reference' value1={back.firstReferenceName || "-"} title2='Second Reference' value2={back.secondReferenceName || "-"} />
+                    <UserBasicInfo title1='Additional Source of Income' value1={back.additionalSourceIncome || "-"} title2='Additional Income' value2={back.additionalIncome || "-"} />
+                    <UserBasicInfo title2='Source of Income' value2={back.sourceOfIncome || "-"} title1='Additional Income Frequency' value1={back.incomeFrequency || "-"} />
                     <UserBasicInfo title1='Stokvel Contribution' value1={back.stockvelContribution || "-"} title2='' value2='' />
                 </div>
-                <div className='col-span-1 border rounded-md p-4'>
+                <div className='col-span-1 border rounded-md p-4'>  
                     <div className='flex justify-between items-center gap-2'>
                         <Title isSubtitle text={`${pay.bankDetail ? "Bank" : "MTN"} Account Details`} />
                         <Button title='Edit' onClick={() => {

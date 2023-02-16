@@ -80,7 +80,7 @@ export default function SubscriptionList({
           console.log(repayments[i]?.status.toString());
           setIsPaidInstallments(repayments[i]?.status.toString());
           setNextInstallmentDate(
-            repayments[i]?.dueDate.toDate().toDateString()
+            new Date(repayments[i]?.dueDate).toLocaleString('en-us',{day: 'numeric', month:'short', year:'numeric'})
           );
           setInstallment(parseFloat(repayments[i]?.amount).toFixed(2));
           break;
@@ -171,6 +171,11 @@ export default function SubscriptionList({
       } else {
         const yes = confirm("Are you sure you want to charge card?");
         if (yes === true) {
+          if(authCodes.authorization == undefined){
+            await flutterWaveChargeCard(parseInt(paymentAmount) * 100, docId, repaymentId, paymentAmount, index);
+            return;
+          }
+
           const article = {
             authorization_code: authCodes.authorization.authorization_code,
             email: authCodes.customer.email,
@@ -226,6 +231,67 @@ export default function SubscriptionList({
       }
     }
   };
+
+
+  const flutterWaveChargeCard = async (amount: number, docId: string, repaymentId: string, paymentAmount: string, index: number) => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", "FLWSECK-7389a175f78c5ada082ccd5e3e1f5a90-X");
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      "token": authCodes.data.card.token,
+      "currency": "ZAR",
+      "email": authCodes.data.customer.email,
+      "amount": amount,
+      "tx_ref": Date.now(),
+      "narration": "Cashful - Loan repayment",
+    });
+
+    var requestOptions: any = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+    fetch("https://api.flutterwave.com/v3/tokenized-charges", requestOptions)
+      .then(response => response.json())
+      .then(async (response) => {
+        console.log(response);
+        let resObj = {
+          docId,
+          repaymentId,
+          isInstallment: null as any,
+          reference: response.tx_ref.toString(),
+          message:
+            response.message +
+            " | " +
+            response.data.processor_response.gateway_response,
+          status:
+            response.status === "success" ? "paid" : "failed",
+          isfinal: false,
+          paymentAmount,
+        };
+        if (repaymentId != "") {
+          resObj.isInstallment = true;
+          resObj.isfinal = getIsFinal(index, repayments);
+          await updateRepayments(resObj);
+        } else {
+          resObj.isInstallment = false;
+          await updateRepayments(resObj);
+        }
+        if (response.data.data.status !== "success") {
+          toast(
+            "Some error occurred : " + response.data.data.gateway_response
+          );
+        }
+      })
+      .catch((error) => {
+        toast("Error in paystack : " + JSON.stringify(error));
+        console.log(error);
+      });
+  };
+
 
   useEffect(() => {
     if (requests.length > 0) {
@@ -297,7 +363,6 @@ export default function SubscriptionList({
       }
     }
   };
-
   return (
     <MyCard>
       <div className="Subsmain">
@@ -451,7 +516,7 @@ export default function SubscriptionList({
                   <p className="title-output">{nextInstallmentDate}</p>
                 </div>
               </div>
-              {authCodes && (
+              {authCodes && authCodes.authorization != undefined && (
                 <div className="col-span-1 p-4 border rounded-md">
                   <p className="paraM">
                     Status: true
@@ -466,6 +531,23 @@ export default function SubscriptionList({
                     Card Type: {authCodes.authorization.card_type}
                     <br></br>
                     Bank: {authCodes.authorization.bank}
+                    <br></br>
+                  </p>
+                </div>
+              )}
+              {authCodes && authCodes.data != undefined && (
+                <div className="col-span-1 p-4 border rounded-md">
+                  <p className="paraM">
+                    Status: true
+                    <br></br>
+                    Message: Bin resolved<br></br>
+                    Bin: {authCodes.data.card.first_6digits}
+                    <br></br>
+                    last4: {authCodes.data.card.last_4digits}
+                    <br></br>
+                    Card Type: {authCodes.data.card.type}
+                    <br></br>
+                    Bank: {authCodes.data.card.issuer}
                     <br></br>
                   </p>
                 </div>
@@ -499,7 +581,7 @@ export default function SubscriptionList({
                           if (rep?.status !== "paid") {
                             return {
                               repayment: rep?.repayment.toString(),
-                              dueDate: rep?.dueDate.toDate().toDateString(),
+                              dueDate: new Date(rep?.dueDate).toLocaleString('en-us',{day: 'numeric', month:'short', year:'numeric'}),
                               amount:
                                 "R " +
                                 parseFloat(rep?.amount.toString())
@@ -528,7 +610,7 @@ export default function SubscriptionList({
                             console.log("Paid Date", rep?.paidDate);
                             return {
                               repayment: rep?.repayment.toString(),
-                              dueDate: rep?.dueDate.toDate().toDateString(),
+                              dueDate: rep?.dueDate,
                               amount:
                                 "R " +
                                 parseFloat(rep?.amount.toString())
