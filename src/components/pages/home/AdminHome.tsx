@@ -74,6 +74,8 @@ const AdminHome = () => {
     
     setShowDetails(true);
   };
+
+  console.log(authCodes);
   return (
     <Main title="Dashaboard">
       <div className="flex flex-row  justify-between items-center gap-2">
@@ -143,22 +145,22 @@ const AdminHome = () => {
         {authCodes && 
         <div >
           <div>
-            <strong>Bank: </strong> {authCodes.authorization.bank}
+            <strong>Bank: </strong> {authCodes.authorization != undefined ? authCodes.authorization.bank : authCodes.data.card.issuer}
           </div>
           <div>
-            <strong>Bin: </strong> {authCodes.authorization.bin}
+            <strong>Bin: </strong> {authCodes.authorization != undefined ? authCodes.authorization.bin : authCodes.data.card.first_6digits}
           </div>
           <div>
-            <strong>Card Type: </strong> {authCodes.authorization.card_type}
+            <strong>Card Type: </strong> {authCodes.authorization != undefined ? authCodes.authorization.card_type : authCodes.data.card.type}
           </div>
           <div>
-            <strong>Brand: </strong> {authCodes.authorization.brand}
+          {authCodes.authorization != undefined ? (<><strong>Brand: </strong> {authCodes.authorization.brand}</>) : (<><strong>Country: </strong>{authCodes.data.card.country}</>)}  
           </div>
           <div>
-            <strong>Expiry: </strong> {authCodes.authorization.exp_year}
+            <strong>Expiry: </strong> {authCodes.authorization != undefined ? authCodes.authorization.exp_year : authCodes.data.card.expiry}
           </div>
           <div>
-            <strong>last4: </strong> {authCodes.authorization.last4}
+            <strong>last4: </strong> {authCodes.authorization != undefined ? authCodes.authorization.last4 : authCodes.data.card.last_4digits}
           </div>
         </div>
         }
