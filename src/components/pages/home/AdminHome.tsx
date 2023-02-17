@@ -75,7 +75,6 @@ const AdminHome = () => {
     setShowDetails(true);
   };
 
-  console.log(authCodes);
   return (
     <Main title="Dashaboard">
       <div className="flex flex-row  justify-between items-center gap-2">
@@ -125,48 +124,52 @@ const AdminHome = () => {
           </>
         }
       >
-        <div id="wrapper">
-        <div >
-          <div>
-            <strong>First Name: </strong> {item?.firstName}
+        <div id="wrapper" style={{ display: "flex", justifyItems: 'space-between' }}>
+          <div style={{flex: '1'}}>
+            <div>
+              <div>
+                <strong>First Name: </strong> <br />{item?.firstName}
+              </div>
+              <div>
+                <strong>Last Name: </strong> <br />{item?.lastName}
+              </div>
+              <div>
+                <strong>Details: </strong> <br />{item?.loanDetail}
+              </div>
+              <div>
+                <strong>Type: </strong> <br />{item?.loanType}
+              </div>
+            </div>
+            {authCodes && 
+              <div >
+                <div>
+                  <strong>Bank: </strong> <br />{authCodes.authorization != undefined ? authCodes.authorization.bank : authCodes.data.card.issuer}
+                </div>
+                <div>
+                  <strong>Bin: </strong> <br />{authCodes.authorization != undefined ? authCodes.authorization.bin : authCodes.data.card.first_6digits}
+                </div>
+                <div>
+                  <strong>Card Type: </strong> <br />{authCodes.authorization != undefined ? authCodes.authorization.card_type : authCodes.data.card.type}
+                </div>
+                <div>
+                {authCodes.authorization != undefined ? (<><strong>Brand: </strong><br /> {authCodes.authorization.brand}</>) : (<><strong>Country: </strong><br />{authCodes.data.card.country}</>)}  
+                </div>
+                <div>
+                  <strong>Expiry: </strong> <br />{authCodes.authorization != undefined ? authCodes.authorization.exp_year : authCodes.data.card.expiry}
+                </div>
+                <div>
+                  <strong>last4: </strong> <br />{authCodes.authorization != undefined ? authCodes.authorization.last4 : authCodes.data.card.last_4digits}
+                </div>
+              </div>
+            }
           </div>
-          <div>
-            <strong>Last Name: </strong> {item?.lastName}
-          </div>
-          <div>
-            <strong>Details: </strong> {item?.loanDetail}
-          </div>
-          <div>
-            <strong>Type: </strong> {item?.loanType}
-          </div>
-          
+          {item?.oftenPaid != undefined && (
+            <div style={{paddingLeft: '12px', flex: '1'}}>
+                <div><strong>Pay frequency: </strong> <br />{item?.oftenPaid}</div>
+                <div><strong>Pay days in a Month: </strong> <br />{item?.payDay}</div>
+            </div>
+          )}
         </div>
-
-        {authCodes && 
-        <div >
-          <div>
-            <strong>Bank: </strong> {authCodes.authorization != undefined ? authCodes.authorization.bank : authCodes.data.card.issuer}
-          </div>
-          <div>
-            <strong>Bin: </strong> {authCodes.authorization != undefined ? authCodes.authorization.bin : authCodes.data.card.first_6digits}
-          </div>
-          <div>
-            <strong>Card Type: </strong> {authCodes.authorization != undefined ? authCodes.authorization.card_type : authCodes.data.card.type}
-          </div>
-          <div>
-          {authCodes.authorization != undefined ? (<><strong>Brand: </strong> {authCodes.authorization.brand}</>) : (<><strong>Country: </strong>{authCodes.data.card.country}</>)}  
-          </div>
-          <div>
-            <strong>Expiry: </strong> {authCodes.authorization != undefined ? authCodes.authorization.exp_year : authCodes.data.card.expiry}
-          </div>
-          <div>
-            <strong>last4: </strong> {authCodes.authorization != undefined ? authCodes.authorization.last4 : authCodes.data.card.last_4digits}
-          </div>
-        </div>
-        }
-
-        </div>
-        
       </Modal>
     </Main>
   );
