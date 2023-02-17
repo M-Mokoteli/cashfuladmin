@@ -662,7 +662,7 @@ export default function SubscriptionList({
                 )}
               </div>
             </div>
-            {authCodes.authorization != undefined && (
+            {authCodes && authCodes.authorization != undefined && (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
                 <div className="charge-input-container">
                   <input
