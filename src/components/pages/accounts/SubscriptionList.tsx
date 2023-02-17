@@ -80,7 +80,7 @@ export default function SubscriptionList({
           console.log(repayments[i]?.status.toString());
           setIsPaidInstallments(repayments[i]?.status.toString());
           setNextInstallmentDate(
-            new Date(repayments[i]?.dueDate).toLocaleString('en-us',{day: 'numeric', month:'short', year:'numeric'})
+            new Date(repayments[i]?.dueDate).toLocaleString('en-us', { day: 'numeric', month: 'short', year: 'numeric' })
           );
           setInstallment(parseFloat(repayments[i]?.amount).toFixed(2));
           break;
@@ -171,7 +171,7 @@ export default function SubscriptionList({
       } else {
         const yes = confirm("Are you sure you want to charge card?");
         if (yes === true) {
-          if(authCodes.authorization == undefined){
+          if (authCodes.authorization == undefined) {
             await flutterWaveChargeCard(parseInt(paymentAmount) * 100, docId, repaymentId, paymentAmount, index);
             return;
           }
@@ -232,129 +232,48 @@ export default function SubscriptionList({
     }
   };
 
+  const chargeCardFlutterWave = async (body: any) => {
+    const response = await axios.post("https://us-central1-cashful-9f540.cloudfunctions.net/users/charge-card", body);
+    return response.data;
+  }
 
   const flutterWaveChargeCard = async (amount: number, docId: string, repaymentId: string, paymentAmount: string, index: number) => {
-
-    var data = JSON.stringify({
+    chargeCardFlutterWave({
       "token": authCodes.data.card.token,
-      "currency": "ZAR",
       "email": authCodes.data.customer.email,
-      "amount": amount,
-      "tx_ref": Date.now(),
-      "narration": "Cashful - Loan repayment",
-    });
-    
-    var config:any = {
-      method: 'POST',
-      maxBodyLength: Infinity,
-      url: 'https://api.flutterwave.com/v3/tokenized-charges',
-      headers: { 
-        'Authorization': 'FLWSECK-7389a175f78c5ada082ccd5e3e1f5a90-X', 
-        'Content-Type': 'application/json'
-      },
-      data : data
-    };
-    
-    // var myHeaders = new Headers();
-    // myHeaders.append("Authorization", "FLWSECK-7389a175f78c5ada082ccd5e3e1f5a90-X");
-    // myHeaders.append("Content-Type", "application/json");
-
-    // var raw = JSON.stringify({
-    //   "token": authCodes.data.card.token,
-    //   "currency": "ZAR",
-    //   "email": authCodes.data.customer.email,
-    //   "amount": amount,
-    //   "tx_ref": Date.now(),
-    //   "narration": "Cashful - Loan repayment",
-    // });
-
-    // var requestOptions: any = {
-    //   method: 'POST',
-    //   headers: myHeaders,
-    //   body: raw,
-    //   redirect: 'follow'
-    // };
-
-    // fetch("https://api.flutterwave.com/v3/tokenized-charges", requestOptions)
-    //   .then(response => response.json())
-
-
-    /**
-     * {
-    "status": "success",
-    "message": "Charge successful",
-    "data": {
-        "id": 837451019,
-        "tx_ref": "tokenized-c-001",
-        "flw_ref": "SLOQ82961676561598971177",
-        "redirect_url": "http://127.0.0",
-        "device_fingerprint": "N/A",
-        "amount": 1,
-        "charged_amount": 1.03,
-        "app_fee": 0.03,
-        "merchant_fee": 0,
-        "processor_response": "APPROVED",
-        "auth_model": "noauth",
-        "currency": "ZAR",
-        "ip": "54.154.184.168",
-        "narration": "Cashful Co",
-        "status": "successful",
-        "payment_type": "card",
-        "created_at": "2023-02-16T15:33:17.000Z",
-        "account_id": 2088360,
-        "customer": {
-            "id": 519780088,
-            "phone_number": null,
-            "name": "FLW Developer",
-            "email": "mahlo@gmail.com",
-            "created_at": "2023-02-11T13:04:30.000Z"
-        },
-        "card": {
-            "first_6digits": "457896",
-            "last_4digits": "6800",
-            "issuer": "VISA FIRSTRAND BANK, LTD.",
-            "country": "ZA",
-            "type": "VISA",
-            "expiry": "01/26",
-            "token": "flw-t0-20bc189baaa3346c8cfab1df6c2c79bb-k3n"
-        }
-    }
-}
-     */
-   
-    axios(config)
-      .then(async (response: any) => {
-        console.log(response);
-        let resObj = {
-          docId,
-          repaymentId,
-          isInstallment: null as any,
-          reference: response.tx_ref.toString(),
-          message:
-            response.message +
-            " | " +
-            response.data.processor_response.gateway_response,
-          status:
-            response.status === "success" ? "paid" : "failed",
-          isfinal: false,
-          paymentAmount,
-        };
-        if (repaymentId != "") {
-          resObj.isInstallment = true;
-          resObj.isfinal = getIsFinal(index, repayments);
-          await updateRepayments(resObj);
-        } else {
-          resObj.isInstallment = false;
-          await updateRepayments(resObj);
-        }
-        if (response.data.data.status !== "success") {
-          toast(
-            "Some error occurred : " + response.data.data.gateway_response
-          );
-        }
-      })
+      "amount": amount / 100,
+    }).then(async (response: any) => {
+      console.log(response);
+      let resObj = {
+        docId,
+        repaymentId,
+        isInstallment: null as any,
+        reference: response.tx_ref,
+        message:
+          response.message +
+          " | " +
+          response.data.processor_response ?? '-N/A-',
+        status:
+          response.status === "success" ? "paid" : "failed",
+        isfinal: false,
+        paymentAmount,
+      };
+      if (repaymentId != "") {
+        resObj.isInstallment = true;
+        resObj.isfinal = getIsFinal(index, repayments);
+        await updateRepayments(resObj);
+      } else {
+        resObj.isInstallment = false;
+        await updateRepayments(resObj);
+      }
+      if (response.data.data.status !== "success") {
+        toast(
+          "Some error occurred : " + response.data.data.gateway_response
+        );
+      }
+    })
       .catch((error) => {
-        toast("Error in paystack : " + JSON.stringify(error));
+        toast("Error: " + JSON.stringify(error));
         console.log(error);
       });
   };
@@ -569,8 +488,8 @@ export default function SubscriptionList({
                     {item?.balanceRemaining == ""
                       ? parseFloat(item?.totalRepayable).toFixed(2).toString()
                       : parseFloat(item?.balanceRemaining)
-                          .toFixed(2)
-                          .toString()}
+                        .toFixed(2)
+                        .toString()}
                   </p>
                 </div>
               </div>
@@ -648,7 +567,7 @@ export default function SubscriptionList({
                           if (rep?.status !== "paid") {
                             return {
                               repayment: rep?.repayment.toString(),
-                              dueDate: new Date(rep?.dueDate).toLocaleString('en-us',{day: 'numeric', month:'short', year:'numeric'}),
+                              dueDate: new Date(rep?.dueDate).toLocaleString('en-us', { day: 'numeric', month: 'short', year: 'numeric' }),
                               amount:
                                 "R " +
                                 parseFloat(rep?.amount.toString())
@@ -743,22 +662,24 @@ export default function SubscriptionList({
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
-              <div className="charge-input-container">
-                <input
-                  type="number"
-                  className="charge-input"
-                  placeholder="Charge a minimum value"
-                  value={chargeCard}
-                  onChange={(e) => setchargeCard(e.target.value)}
-                />
-                <input
-                  type="submit"
-                  className="charge-input"
-                  onClick={() => transactAMinimumValue()}
-                />
+            {authCodes.authorization != undefined && (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+                <div className="charge-input-container">
+                  <input
+                    type="number"
+                    className="charge-input"
+                    placeholder="Charge a minimum value"
+                    value={chargeCard}
+                    onChange={(e) => setchargeCard(e.target.value)}
+                  />
+                  <input
+                    type="submit"
+                    className="charge-input"
+                    onClick={() => transactAMinimumValue()}
+                  />
+                </div>
               </div>
-            </div>
+            )}
             {item != null && <ShowBalance item={item} />}
           </>
         </Modal>
