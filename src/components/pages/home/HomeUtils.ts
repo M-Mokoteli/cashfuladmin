@@ -181,7 +181,7 @@ export const onUpdateCardStatus = async (userId: string, status: STATUS) => {
 
 export const onUpdateLevel = async (uid: string, levelId: string) => {
     //send to upcoming..
-    const yes = confirm("Are you sure you want to change the lavel?")
+    const yes = confirm("Are you sure you want to change the level?")
     if (yes === true) {
         const lrDocRef = createDoc<User>(Collections.USER, uid)
         await updateDoc(lrDocRef, { "levelId": levelId })
