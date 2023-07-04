@@ -167,13 +167,13 @@ export default function AccountInfo({ info, load }: iAccountInfo) {
               </>
             )}
             <Spacing />
-            <Button fullWidth onClick={() => {
+          
+             */}
+           <Button fullWidth onClick={() => {
                 setShow(true)
                 //setId(info.id)
             }}>View Account Information</Button>
             <AccountDetailModal info={info} show={show} setShow={setShow} />
-             */}
-           
             <Spacing />
             <Title text='User documents' />
             <Spacing />
